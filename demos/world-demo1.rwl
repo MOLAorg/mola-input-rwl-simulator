@@ -1,0 +1,45 @@
+// ---------------------------------------------------------------
+// A first demonstration of the Recursive World Language (RWL)
+//  Defines a corridor-like square closed loop
+//
+//  Author: Jose Luis Blanco Claraco, Oct 25 2011.
+// ---------------------------------------------------------------
+
+// Description of the language:
+//  - Comments (like these) start with a C style comment "//"
+//  - Multi-line comments (/* ... */) are not allowed.
+//  - The central component of RWL programs are "lists", sequenecs of 
+//     primitives and calls to other lists. 
+//  - A list is always declared as:
+//      LIST <NAME>
+//        <primitives>
+//      ENDLIST
+//  - The entrance point is always a list named "main"
+//
+
+LIST corridor_1  // A simple corridor segment of length=1m
+	LM +0.2 -0.4 0
+	LM +0.2 +0.4 0
+	LM +0.6 -0.4 0
+	LM +0.6 +0.4 0
+	X+= 1
+ENDLIST
+
+LIST corridor_10  // A 10m corridor
+	CALL *10 corridor_1
+	NODE
+ENDLIST
+
+LIST main
+	// At the origin there is always a "node", there is no need to 
+	//  manually create it.
+	// Start creating the corridors:
+	CALL corridor_10
+	YAW+= 90
+	CALL corridor_10
+	YAW+= 90
+	CALL corridor_10
+	YAW+= 90
+	CALL corridor_10
+ENDLIST
+
