@@ -34,7 +34,8 @@ void rwt::world_to_opengl(
 {
 	out_gl.clear();
 
-	// opts ...
+	if (opts.show_world_origin_corner)
+		out_gl.insert( mrpt::opengl::stock_objects::CornerXYZSimple(opts.world_origin_corner_params.scale, opts.world_origin_corner_params.line_width) );
 
 	mrpt::opengl::CPointCloudPtr gl_LMs =mrpt::opengl::CPointCloud::Create();
 	gl_LMs->loadFromPointsMap( &the_world.landmarks);

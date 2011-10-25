@@ -106,10 +106,23 @@ namespace rwt
 	/** To be used with rwt::world_to_opengl */
 	struct WRL_RenderOptions
 	{
+		/** Aux struct with the parameters of each XYZ corner */
+		struct CornerParams
+		{
+			CornerParams() : scale(1), line_width(1) { }
+			CornerParams(double _scale,double _line_width=1.0) : scale(_scale), line_width(_line_width) { }
+			double scale;
+			double line_width;
+		};
+
 		/** Ctor */
-		WRL_RenderOptions()
+		WRL_RenderOptions() :
+			show_world_origin_corner   (true),
+			world_origin_corner_params (1.,3.)
 		{ }
 
+		bool          show_world_origin_corner;
+		CornerParams  world_origin_corner_params;
 
 	};
 
