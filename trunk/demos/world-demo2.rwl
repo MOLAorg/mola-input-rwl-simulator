@@ -1,0 +1,44 @@
+// ---------------------------------------------------------------
+// A second demonstration of the Recursive World Language (RWL)
+//
+//  Author: Jose Luis Blanco Claraco, Oct 25 2011.
+// ---------------------------------------------------------------
+
+// Refer to demo1.rwl for more comments.
+
+LIST corridor_1  // A simple corridor segment of length=1m
+	LM +0.2 -0.4 0
+	LM +0.2 +0.4 0
+	LM +0.6 -0.4 0
+	LM +0.6 +0.4 0
+	X+= 1
+ENDLIST
+
+LIST corridor_10  // A 10m corridor
+	CALL *10 corridor_1
+	NODE
+ENDLIST
+
+LIST main
+	CALL corridor_10
+	YAW+= 90
+	CALL corridor_10
+	YAW+= 90
+	CALL corridor_10
+
+	PUSH
+	YAW+= 90
+	CALL corridor_10
+	POP
+
+	PUSH
+	CALL corridor_10
+	POP
+
+	PUSH
+	YAW+= -90
+	CALL corridor_10
+	POP
+	
+ENDLIST
+

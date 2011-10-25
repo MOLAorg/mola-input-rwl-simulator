@@ -1,0 +1,158 @@
+// ---------------------------------------------------------------
+// A second demonstration of the Recursive World Language (RWL)
+//
+//  Author: Jose Luis Blanco Claraco, Oct 25 2011.
+// ---------------------------------------------------------------
+
+// Refer to demo1.rwl for more comments.
+
+LIST corridor_1  // A simple corridor segment of length=1m
+	LM +0.2 -0.4 0
+	LM +0.2 +0.4 0
+	LM +0.6 -0.4 0
+	LM +0.6 +0.4 0
+	X+= 1
+ENDLIST
+
+// A 5m corridor
+LIST corridor_5  
+	CALL *5 corridor_1
+	NODE
+ENDLIST
+
+// A 10m corridor
+LIST corridor_10
+	CALL *10 corridor_1
+	NODE
+ENDLIST
+
+// A 20m corridor
+LIST corridor_20
+	CALL *20 corridor_1
+	NODE
+ENDLIST
+
+
+// An tilted corridor going up 1 level
+LIST tilt_corridor_up
+	CALL *2 corridor_1
+	PITCH+= -10
+	CALL *5 corridor_1
+	PITCH+= 10
+	CALL *2 corridor_1
+	NODE
+ENDLIST
+
+LIST tower_squared_1_floor
+	CALL tilt_corridor_up
+	YAW+= 90
+	CALL tilt_corridor_up
+	YAW+= 90
+	CALL tilt_corridor_up
+	YAW+= 90
+	CALL tilt_corridor_up
+	YAW+= 90
+ENDLIST
+
+LIST tower_squared_3_stores_with_entrance
+	CALL corridor_5
+	CALL *3 tower_squared_1_floor
+ENDLIST
+
+LIST tower_squared_7_stores_with_entrance
+	CALL corridor_5
+	CALL *7 tower_squared_1_floor
+ENDLIST
+
+LIST tower_squared_15_stores_with_entrance
+	CALL corridor_5
+	CALL *15 tower_squared_1_floor
+ENDLIST
+
+LIST tower_hexagonal_1_floor
+	CALL tilt_corridor_up
+	YAW+= 60
+	CALL tilt_corridor_up
+	YAW+= 60
+	CALL tilt_corridor_up
+	YAW+= 60
+	CALL tilt_corridor_up
+	YAW+= 60
+	CALL tilt_corridor_up
+	YAW+= 60
+	CALL tilt_corridor_up
+	YAW+= 60
+ENDLIST
+
+LIST tower_hexagonal_4_stores_with_entrance
+	CALL corridor_5
+	CALL *4 tower_hexagonal_1_floor
+ENDLIST
+
+LIST city_street_square_tower7_at_left_hand
+	CALL *20 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL tower_squared_7_stores_with_entrance
+	POP
+ENDLIST
+
+LIST city_street_square_tower15_at_left_hand
+	CALL *20 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL tower_squared_15_stores_with_entrance
+	POP
+ENDLIST
+
+
+LIST city_block_square_towers
+	CALL *2 city_street_square_tower7_at_left_hand
+	CALL corridor_20
+	YAW+= 90
+	CALL *2 city_street_square_tower7_at_left_hand
+	CALL corridor_20
+	YAW+= 90
+	CALL *2 city_street_square_tower15_at_left_hand
+	CALL corridor_20
+	YAW+= 90
+	CALL *2 city_street_square_tower7_at_left_hand
+	CALL corridor_20
+ENDLIST
+
+LIST city_block_square_towers_and_move
+	CALL city_block_square_towers
+	CALL corridor_20
+ENDLIST
+
+
+LIST main
+	CALL *4 city_block_square_towers_and_move
+
+	CALL *140 corridor_1
+	YAW+= 90
+	NODE
+
+	CALL *4 city_block_square_towers_and_move
+
+	CALL *140 corridor_1
+	YAW+= 90
+	NODE
+
+	CALL *4 city_block_square_towers_and_move
+
+	CALL *140 corridor_1
+	YAW+= 90
+	NODE
+
+	CALL *4 city_block_square_towers_and_move
+	CALL *140 corridor_1
+	YAW+= 90
+	NODE
+	
+ENDLIST
+
