@@ -12,7 +12,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${${PROJECT_NAME}_BINARY_DIR}/bin CACHE PATH "Output 
 #   The list of "libs" which can be included can be found in:
 #     http://www.mrpt.org/Libraries
 #
-#   The dependencies of a library are automatically added, so you only 
+#   The dependencies of a library are automatically added, so you only
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
 FIND_PACKAGE( MRPT REQUIRED base maps obs gui graphs)
@@ -31,29 +31,29 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 
 
 # --------------------------------
-# TARGET : librwl
+# TARGET : librwt
 # --------------------------------
 FILE(GLOB LIBHDRS "src/*.h")
 FILE(GLOB LIBSRCS "src/*.cpp")
 FILE(GLOB LIBHDRSPUB "include/*.h")
-ADD_LIBRARY(rwl ${LIBHDRS} ${LIBSRCS} ${LIBHDRSPUB})
+ADD_LIBRARY(rwt ${LIBHDRS} ${LIBSRCS} ${LIBHDRSPUB})
 
 # --------------------------------
-# TARGET : rwl-compiler
+# TARGET : rwt-compiler
 # --------------------------------
-ADD_EXECUTABLE(rwl-compiler
+ADD_EXECUTABLE(rwt-compiler
 	apps/main-compiler.cpp
 	)
-TARGET_LINK_LIBRARIES(rwl-compiler rwl ${MRPT_LIBS})
-ADD_DEPENDENCIES(rwl-compiler rwl)
+TARGET_LINK_LIBRARIES(rwt-compiler rwt ${MRPT_LIBS})
+ADD_DEPENDENCIES(rwt-compiler rwt)
 
 # --------------------------------
-# TARGET : rwl-dataset-simulator
+# TARGET : rwt-dataset-simulator
 # --------------------------------
-ADD_EXECUTABLE(rwl-dataset-simulator
-	apps/main-dataset-simulator.cpp  
+ADD_EXECUTABLE(rwt-dataset-simulator
+	apps/main-dataset-simulator.cpp
 	)
-TARGET_LINK_LIBRARIES(rwl-dataset-simulator rwl ${MRPT_LIBS})
-ADD_DEPENDENCIES(rwl-dataset-simulator rwl)
+TARGET_LINK_LIBRARIES(rwt-dataset-simulator rwt ${MRPT_LIBS})
+ADD_DEPENDENCIES(rwt-dataset-simulator rwt)
 
 

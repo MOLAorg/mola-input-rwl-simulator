@@ -3,27 +3,27 @@
    |                                                                           |
    |   Copyright (C) 2011  Jose Luis Blanco Claraco                            |
    |                                                                           |
-   |     RWLC is free software: you can redistribute it and/or modify          |
+   |      RWT is free software: you can redistribute it and/or modify          |
    |     it under the terms of the GNU General Public License as published by  |
    |     the Free Software Foundation, either version 3 of the License, or     |
    |     (at your option) any later version.                                   |
    |                                                                           |
-   |   RWLC is distributed in the hope that it will be useful,                 |
+   |    RWT is distributed in the hope that it will be useful,                 |
    |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
    |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
    |     GNU General Public License for more details.                          |
    |                                                                           |
    |     You should have received a copy of the GNU General Public License     |
-   |     along with RWLC.  If not, see <http://www.gnu.org/licenses/>.         |
+   |     along with  RWT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include "rwl.h"
+#include "rwt.h"
 
-using namespace rwl;
+using namespace rwt;
 using namespace std;
 
-struct RWL_run_context
+struct RWT_run_context
 {
 	struct StackableContext
 	{
@@ -34,11 +34,11 @@ struct RWL_run_context
 	size_t                            current_node;  //!< As index of out_world.nodes
 	mrpt::poses::CPose3D              cursor;    //!< A SE(3) pose: 3x3 matrix + 3 translation
 	std::stack<StackableContext>      cntx_stack;
-	const RWL_Program                &program;
-	RWL_World                        &out_world;
+	const RWT_Program                &program;
+	RWT_World                        &out_world;
 
 	/** Ctor */
-	RWL_run_context(const RWL_Program &_program, RWL_World &_world) :
+	RWT_run_context(const RWT_Program &_program, RWT_World &_world) :
 		current_node (0),
 		cursor    (),
 		program   (_program),
@@ -69,23 +69,23 @@ struct RWL_run_context
 	}
 
 	/** Evaluate 1st argument as a number */
-	double eval1st(const RWL_command &cmd)
+	double eval1st(const RWT_command &cmd)
 	{
 		if (cmd.args.empty())
 			throw std::runtime_error("*ERROR* Evaluating primitive: Argument expected but none provided.");
-		return rwl::str2num(cmd.args[0]);
+		return rwt::str2num(cmd.args[0]);
 	}
 };
 
-bool recursive_run_rwl_program(
+bool recursive_run_rwt_program(
 	const TListSet::const_iterator &it_lst,
-	RWL_run_context & cntx
+	RWT_run_context & cntx
 	);
 
 
-bool run_rwl_cmd(
-	const RWL_command &cmd,
-	RWL_run_context & cntx )
+bool run_rwt_cmd(
+	const RWT_command &cmd,
+	RWT_run_context & cntx )
 {
 	using mrpt::utils::DEG2RAD;
 
@@ -154,16 +154,16 @@ bool run_rwl_cmd(
 				throw std::runtime_error("*ERROR* LM: Three arguments expected!\n");
 
 			// Get relative coords:
-			const double lx = rwl::str2num(cmd.args[0]);
-			const double ly = rwl::str2num(cmd.args[1]);
-			const double lz = rwl::str2num(cmd.args[2]);
+			const double lx = rwt::str2num(cmd.args[0]);
+			const double ly = rwt::str2num(cmd.args[1]);
+			const double lz = rwt::str2num(cmd.args[2]);
 
 			// Convert to global:
 			double gx,gy,gz;
 			cntx.cursor.composePoint(lx,ly,lz, gx,gy,gz);
 			cntx.out_world.landmarks.insertPointFast(gx,gy,gz); // "Fast" means the KD-tree will not be marked as invalid, but we don't mind that here.
 
-			//RWL_MESSAGE << "LM: " << gx << ", " << gy << ", " << gz << endl;
+			//RWT_MESSAGE << "LM: " << gx << ", " << gy << ", " << gz << endl;
 		}
 		break;
 	case PRIM_NODE:
@@ -175,9 +175,9 @@ bool run_rwl_cmd(
 			double lx=0,ly=0,lz=0;
 			if (cmd.args.size()==3)
 			{
-				lx = rwl::str2num(cmd.args[0]);
-				ly = rwl::str2num(cmd.args[1]);
-				lz = rwl::str2num(cmd.args[2]);
+				lx = rwt::str2num(cmd.args[0]);
+				ly = rwt::str2num(cmd.args[1]);
+				lz = rwt::str2num(cmd.args[2]);
 			}
 			// Convert to global:
 			double gx,gy,gz;
@@ -200,18 +200,18 @@ bool run_rwl_cmd(
 			if (!skip)
 			{
 				cntx.out_world.nodes.insertPoint(gx,gy,gz);
-				//RWL_MESSAGE << "NODE: " << gx << ", " << gy << ", " << gz << " from " << cntx.cursor  << endl;
+				//RWT_MESSAGE << "NODE: " << gx << ", " << gy << ", " << gz << " from " << cntx.cursor  << endl;
 				cntx.current_node = cntx.out_world.nodes.size()-1;
 			}
 			else
 			{
 				// We have revisited an old node:
-				// RWL_MESSAGE << "NODE *SKIPPING*: " << gx << ", " << gy << ", " << gz << " from " << cntx.cursor  << endl;
+				// RWT_MESSAGE << "NODE *SKIPPING*: " << gx << ", " << gy << ", " << gz << " from " << cntx.cursor  << endl;
 				cntx.current_node = revisit_index;
 			}
 
 			// Create arc:
-			RWL_graph_edge edge_val; /* dummy edge value */
+			RWT_graph_edge edge_val; /* dummy edge value */
 			cntx.out_world.graph.insertEdge( prev_node,cntx.current_node, edge_val );
 		}
 		break;
@@ -230,9 +230,9 @@ bool run_rwl_cmd(
 				if (sNumReps.empty() || sNumReps[0]!='*')
 					throw std::runtime_error("*ERROR* CALL: Expected '*N' for number of repetitions!\n");
 
-				num_calls = rwl::str2num(sNumReps.substr(1));
+				num_calls = rwt::str2num(sNumReps.substr(1));
 			}
-			//RWL_MESSAGE << "CALL: " << num_calls << " times LIST: '" << callListName << "'\n";
+			//RWT_MESSAGE << "CALL: " << num_calls << " times LIST: '" << callListName << "'\n";
 
 			const TListSet::const_iterator it_lst = cntx.program.lists.find(callListName);
 
@@ -240,7 +240,7 @@ bool run_rwl_cmd(
 				throw std::runtime_error(mrpt::format("*ERROR* CALL: Unknown list name: '%s'\n",callListName.c_str()));
 
 			for (size_t i=0;i<num_calls;i++)
-				recursive_run_rwl_program(it_lst,cntx);
+				recursive_run_rwt_program(it_lst,cntx);
 		}
 		break;
 	default:
@@ -250,35 +250,35 @@ bool run_rwl_cmd(
 	return true;
 }
 
-bool recursive_run_rwl_program(
+bool recursive_run_rwt_program(
 	const TListSet::const_iterator &it_lst,
-	RWL_run_context & cntx
+	RWT_run_context & cntx
 	)
 {
-	const RWL_List & lst = it_lst->second;
-	//RWL_MESSAGE << "Running list: " << it_lst->first << endl;
+	const RWT_List & lst = it_lst->second;
+	//RWT_MESSAGE << "Running list: " << it_lst->first << endl;
 
 	for (size_t i=0;i<lst.cmds.size();i++)
-		run_rwl_cmd(lst.cmds[i],cntx);
+		run_rwt_cmd(lst.cmds[i],cntx);
 
 	return true;
-} // end of recursive_run_rwl_program
+} // end of recursive_run_rwt_program
 
-/** Runs an RWL program and generates its corresponding World.
+/** Runs an RWT program and generates its corresponding World.
   *  \return false on any error, and dump info to std::cerr
   */
-bool rwl::run_rwl_program(const RWL_Program &program, RWL_World & out_world)
+bool rwt::run_rwt_program(const RWT_Program &program, RWT_World & out_world)
 {
-	RWL_run_context  cntx(program,out_world);
+	RWT_run_context  cntx(program,out_world);
 
 	// Start at the "main" list and run recursively:
 	TListSet::const_iterator itMain = program.lists.find("main");
 
 	if (itMain == program.lists.end())
 	{
-		RWL_MESSAGE << "*ERROR* Program has no 'main' list!\n";
+		RWT_MESSAGE << "*ERROR* Program has no 'main' list!\n";
 		return false;
 	}
 
-	return recursive_run_rwl_program(itMain,cntx);
-} // end of run_rwl_program
+	return recursive_run_rwt_program(itMain,cntx);
+} // end of run_rwt_program

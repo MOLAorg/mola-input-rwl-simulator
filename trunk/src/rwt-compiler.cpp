@@ -3,35 +3,35 @@
    |                                                                           |
    |   Copyright (C) 2011  Jose Luis Blanco Claraco                            |
    |                                                                           |
-   |     RWLC is free software: you can redistribute it and/or modify          |
+   |      RWT is free software: you can redistribute it and/or modify          |
    |     it under the terms of the GNU General Public License as published by  |
    |     the Free Software Foundation, either version 3 of the License, or     |
    |     (at your option) any later version.                                   |
    |                                                                           |
-   |   RWLC is distributed in the hope that it will be useful,                 |
+   |    RWT is distributed in the hope that it will be useful,                 |
    |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
    |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
    |     GNU General Public License for more details.                          |
    |                                                                           |
    |     You should have received a copy of the GNU General Public License     |
-   |     along with RWLC.  If not, see <http://www.gnu.org/licenses/>.         |
+   |     along with  RWT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include "rwl.h"
+#include "rwt.h"
 
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/system/string_utils.h>
 //#include <mrpt/gui/CDisplayWindow3D.h>
 //#include <mrpt/opengl.h>
 
-using namespace rwl;
+using namespace rwt;
 using namespace std;
 
 struct TStrings2Primitive
 {
 	const char *str;
-	const RWL_primitive_t prim;
+	const RWT_primitive_t prim;
 };
 
 const size_t primitive_strings_count = 17;
@@ -57,10 +57,10 @@ const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 	{ "CALL", PRIM_CALL }
 };
 
-/** Compile an input RWL file into a program.
+/** Compile an input RWT file into a program.
   *  \return false on any error, and dump info to std::cerr
   */
-bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
+bool rwt::compile_rwt_program(const std::string &file, RWT_Program &out_program)
 {
 	using mrpt::system::strCmpI;
 	using mrpt::system::tokenize;
@@ -89,7 +89,7 @@ bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
 		};
 
 		TState    parser_state = stIdle;
-		RWL_List  parser_cur_list; // The list being compile right now.
+		RWT_List  parser_cur_list; // The list being compile right now.
 		string    parser_cur_list_name;
 
 		while (flp.getNextLine(ss))
@@ -122,7 +122,7 @@ bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
 					throw std::runtime_error(mrpt::format("%u: LIST name was already used\n",static_cast<unsigned int>(flp.getCurrentLineNumber())) );
 
 				parser_state=stList; // we are now within a list.
-				parser_cur_list = RWL_List();
+				parser_cur_list = RWT_List();
 				parser_cur_list_name = sListName;
 
 			}
@@ -131,7 +131,7 @@ bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
 				if (parser_state!=stList)
 					throw std::runtime_error(mrpt::format("%u: ENDLIST out of LIST block is not allowed\n",static_cast<unsigned int>(flp.getCurrentLineNumber())) );
 
-				//RWL_MESSAGE << "Created list: " << parser_cur_list_name << endl;
+				//RWT_MESSAGE << "Created list: " << parser_cur_list_name << endl;
 				out_program.lists[parser_cur_list_name] = parser_cur_list;
 
 				parser_state=stIdle; // we are now outside a list.
@@ -145,7 +145,7 @@ bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
 
 				args.erase(args.begin());  // Remove the first one, so the rest are arguments.
 
-				RWL_primitive_t primitive_id = PRIM_INVALID;
+				RWT_primitive_t primitive_id = PRIM_INVALID;
 
 				for (size_t i=0;i<primitive_strings_count;i++)
 				{
@@ -162,7 +162,7 @@ bool rwl::compile_rwl_program(const std::string &file, RWL_Program &out_program)
 
 				// append (quick):
 				parser_cur_list.cmds.resize( parser_cur_list.cmds.size()+1 );
-				RWL_command &new_cmd = parser_cur_list.cmds.back();
+				RWT_command &new_cmd = parser_cur_list.cmds.back();
 				new_cmd.primitive = primitive_id;
 				new_cmd.args = args;
 			}

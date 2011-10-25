@@ -3,18 +3,18 @@
    |                                                                           |
    |   Copyright (C) 2011  Jose Luis Blanco Claraco                            |
    |                                                                           |
-   |     RWLC is free software: you can redistribute it and/or modify          |
+   |      RWT is free software: you can redistribute it and/or modify          |
    |     it under the terms of the GNU General Public License as published by  |
    |     the Free Software Foundation, either version 3 of the License, or     |
    |     (at your option) any later version.                                   |
    |                                                                           |
-   |   RWLC is distributed in the hope that it will be useful,                 |
+   |    RWT is distributed in the hope that it will be useful,                 |
    |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
    |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
    |     GNU General Public License for more details.                          |
    |                                                                           |
    |     You should have received a copy of the GNU General Public License     |
-   |     along with RWLC.  If not, see <http://www.gnu.org/licenses/>.         |
+   |     along with  RWT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
@@ -38,18 +38,18 @@
 #include <mrpt/graphs.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 
-#include "rwl-utils.h"  // Useful MACROS, etc.
+#include "rwt-utils.h"  // Useful MACROS, etc.
 
-namespace rwl
+namespace rwt
 {
 	using std::vector;
 	using std::string;
 
-	/** @name RWL data types
+	/** @name RWT data types
 	    @{ */
 
-	// Recursive World Language (RWL) primitives:
-	enum RWL_primitive_t
+	// Recursive World Language (RWT) primitives:
+	enum RWT_primitive_t
 	{
 		PRIM_INVALID = -1,
 
@@ -61,35 +61,35 @@ namespace rwl
 		PRIM_CALL
 	};
 
-	struct RWL_command
+	struct RWT_command
 	{
-		RWL_primitive_t  primitive;
+		RWT_primitive_t  primitive;
 		vector<string>   args;
 	};
 
 	/** A sequence of primitives and their arguments */
-	struct RWL_List
+	struct RWT_List
 	{
-		vector<RWL_command>  cmds;
+		vector<RWT_command>  cmds;
 	};
 
-	typedef std::map<std::string,RWL_List,mrpt::utils::ci_less> TListSet; //!< A set of RWL_Lists, indexed by name (case insensitive)
+	typedef std::map<std::string,RWT_List,mrpt::utils::ci_less> TListSet; //!< A set of RWT_Lists, indexed by name (case insensitive)
 
-	/** A complete RWL program, comprising any number of lists */
-	struct RWL_Program
+	/** A complete RWT program, comprising any number of lists */
+	struct RWT_Program
 	{
 		void clear() { lists.clear(); }
 
 		TListSet  lists;
 	};
 
-	struct RWL_graph_edge
+	struct RWT_graph_edge
 	{
 	};
-	typedef mrpt::graphs::CDirectedGraph<RWL_graph_edge> RWL_adjacency_graph;
+	typedef mrpt::graphs::CDirectedGraph<RWT_graph_edge> RWT_adjacency_graph;
 
 	/** The generated world, with landmarks and way-point nodes */
-	struct RWL_World
+	struct RWT_World
 	{
 		void clear()
 		{
@@ -100,10 +100,10 @@ namespace rwl
 
 		mrpt::slam::CSimplePointsMap  landmarks; //!< XYZ coordinates of all landmarks, accesible thru a KD-tree
 		mrpt::slam::CSimplePointsMap  nodes;     //!< XYZ coordinates of all nodes, accesible thru a KD-tree
-		RWL_adjacency_graph           graph;     //!< graph.edges contain the existing paths between \a nodes above
+		RWT_adjacency_graph           graph;     //!< graph.edges contain the existing paths between \a nodes above
 	};
 
-	/** To be used with rwl::world_to_opengl */
+	/** To be used with rwt::world_to_opengl */
 	struct WRL_RenderOptions
 	{
 		/** Ctor */
@@ -116,21 +116,21 @@ namespace rwl
 	/** @} */  // ----------- end of data types ---------------
 
 
-	/** @name RWL API
+	/** @name RWT API
 	    @{ */
 
-	/** Compile an input RWL file into a program.
+	/** Compile an input RWT file into a program.
 	  *  \return false on any error, and dump info to std::cerr
 	  */
-	bool compile_rwl_program(const std::string &file, RWL_Program &out_program);
+	bool compile_rwt_program(const std::string &file, RWT_Program &out_program);
 
-	/** Runs an RWL program and generates its corresponding World.
+	/** Runs an RWT program and generates its corresponding World.
 	  *  \return false on any error, and dump info to std::cerr
 	  */
-	bool run_rwl_program(const RWL_Program &program, RWL_World & out_world);
+	bool run_rwt_program(const RWT_Program &program, RWT_World & out_world);
 
 	/** Build an OpenGL representation of the world */
-	void world_to_opengl(const RWL_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
+	void world_to_opengl(const RWT_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
 
 
 	/** @} */  // ----------- end of API ---------------

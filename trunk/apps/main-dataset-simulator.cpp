@@ -3,18 +3,18 @@
    |                                                                           |
    |   Copyright (C) 2011  Jose Luis Blanco Claraco                            |
    |                                                                           |
-   |     RWLC is free software: you can redistribute it and/or modify          |
+   |      RWT is free software: you can redistribute it and/or modify          |
    |     it under the terms of the GNU General Public License as published by  |
    |     the Free Software Foundation, either version 3 of the License, or     |
    |     (at your option) any later version.                                   |
    |                                                                           |
-   |   RWLC is distributed in the hope that it will be useful,                 |
+   |    RWT is distributed in the hope that it will be useful,                 |
    |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
    |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
    |     GNU General Public License for more details.                          |
    |                                                                           |
    |     You should have received a copy of the GNU General Public License     |
-   |     along with RWLC.  If not, see <http://www.gnu.org/licenses/>.         |
+   |     along with  RWT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
@@ -28,9 +28,9 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl.h>
 
-#include "rwl.h"
+#include "rwt.h"
 
-using namespace rwl;
+using namespace rwt;
 using namespace std;
 
 // ---------------
@@ -42,7 +42,7 @@ int main(int argc, char**argv)
 	{
 		if (argc!=2)
 		{
-			cout << "Usage:\n" << argv[0] << " input_file.rwl\n";
+			cout << "Usage:\n" << argv[0] << " input_file.rwt\n";
 			return 1;
 		}
 
@@ -50,8 +50,8 @@ int main(int argc, char**argv)
 
 		// Compile ----------------------------
 		cout << "Compiling...\n"; cout.flush();
-		RWL_Program program;
-		if (!compile_rwl_program(sFil,program))
+		RWT_Program program;
+		if (!compile_rwt_program(sFil,program))
 		{
 			cerr << "*ERROR* Program compilation failed\n";
 			return 1;
@@ -59,10 +59,10 @@ int main(int argc, char**argv)
 		cout << "Compilation succeeded!\n";
 
 		// Run ----------------------------
-		RWL_World the_world;
+		RWT_World the_world;
 
 		cout << "Building world...\n"; cout.flush();
-		if (!run_rwl_program(program,the_world))
+		if (!run_rwt_program(program,the_world))
 		{
 			cerr << "*ERROR* Program compilation failed\n";
 			return 1;
@@ -94,7 +94,7 @@ int main(int argc, char**argv)
 		gl_edges->setLineWidth(1);
 		gl_edges->setColor_u8( mrpt::utils::TColor(0,0,220));
 
-		for (RWL_adjacency_graph::const_iterator it=the_world.graph.begin();it!=the_world.graph.end();++it)
+		for (RWT_adjacency_graph::const_iterator it=the_world.graph.begin();it!=the_world.graph.end();++it)
 		{
 			const size_t idx1 = it->first.first;
 			float x1,y1,z1;
