@@ -23,5 +23,15 @@
 using namespace rwt;
 using namespace std;
 
+// This is the main body of the simulator:
+void rwt::simulate_rwt_dataset(
+	const std::vector<mrpt::math::TPoint3D>    waypoints,
+	const RWT_World                          & world,
+	const RWT_PathOptions                    & pathParams,
+	const RWT_SensorOptions                  & sensorParams,
+	const RWT_OutputOptions                  & outputParams
+	)
+{
 
 
+}
