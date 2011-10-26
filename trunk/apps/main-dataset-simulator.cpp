@@ -64,7 +64,7 @@ int main(int argc, char**argv)
 		}
 		cout << "[1<] Compilation succeeded!\n";
 
-		// Run ----------------------------
+		// Run the program to build the world ----------------
 		RWT_World the_world;
 
 		cout << "[2>] Building world...\n"; cout.flush();
@@ -83,18 +83,71 @@ int main(int argc, char**argv)
 		}
 
 		// Display ----------------------------
-		mrpt::gui::CDisplayWindow3D win3D("RWL compilation result",640,480);
-		win3D.getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
+		if (1)
+		{
+			mrpt::gui::CDisplayWindow3D win3D("RWL compilation result",640,480);
+			win3D.getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
 
-		mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
-		rwt::world_to_opengl(the_world, *gl_world);
+			mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
+			rwt::world_to_opengl(the_world, *gl_world);
 
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
-		scene->insert( gl_world );
-		win3D.unlockAccess3DScene();
+			mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+			scene->insert( gl_world );
+			win3D.unlockAccess3DScene();
 
-		win3D.repaint();
-		win3D.waitForKey();
+			win3D.repaint();
+			//win3D.waitForKey();
+		}
+
+		// --------------------------------------------------------
+		// Generate path
+		// --------------------------------------------------------
+		cout << "[3>] Generating path...\n"; cout.flush();
+
+		std::vector<mrpt::math::TPoint3D>  simulation_waypoints;
+
+		// 2) A sequence of node IDs, corresponding to the 0-based indices of the RWL
+		//      program "NODE" primitives:
+		//  source_node_IDs = ID_1 ID_2 ID_3 .... ID_N
+		const string sSourceNodeIDs = cfg.read_string("path","source_node_IDs","");
+		if (!sSourceNodeIDs.empty())
+		{
+			vector<string> lst;
+			mrpt::system::tokenize(sSourceNodeIDs," \t,",lst);
+			ASSERTMSG_(!lst.empty(), "[path].source_node_IDs: Expected list of IDs!")
+
+			simulation_waypoints.reserve(lst.size());
+
+			for (size_t i=0;i<lst.size();i++)
+			{
+				const size_t idx = static_cast<size_t>( rwt::str2num(lst[i]) );
+				ASSERT_BELOW_(idx,the_world.nodes.size())
+
+				float x,y,z;
+				the_world.nodes.getPoint(idx,x,y,z);
+				simulation_waypoints.push_back( mrpt::math::TPoint3D(x,y,z) );
+			}
+		}
+		else
+		{
+			// ...
+		}
+
+		cout << "[3<] Path generated OK: " << simulation_waypoints.size() << " waypoints.\n"; cout.flush();
+
+		// load the rest of options:
+		// ------------------------------
+		RWT_PathOptions     pathParams;
+		RWT_SensorOptions   sensorParams;
+		RWT_OutputOptions   outputParams;
+
+		// And launch simulation:
+		// ----------------------------
+		cout << "[4>] Running simulator...\n"; cout.flush();
+
+		simulate_rwt_dataset(simulation_waypoints, the_world, pathParams, sensorParams, outputParams);
+
+		cout << "[4<] Simulation done!\n"; cout.flush();
 
 		return 0;
 	} catch (exception &e) {

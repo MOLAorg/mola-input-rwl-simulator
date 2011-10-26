@@ -123,8 +123,28 @@ namespace rwt
 
 		bool          show_world_origin_corner;
 		CornerParams  world_origin_corner_params;
+	}; // end of WRL_RenderOptions
 
-	};
+	struct RWT_PathOptions
+	{
+		RWT_PathOptions()
+		{ }
+
+	}; // end of RWT_PathOptions
+
+	struct RWT_SensorOptions
+	{
+		RWT_SensorOptions()
+		{ }
+
+	}; // end of RWT_SensorOptions
+
+	struct RWT_OutputOptions
+	{
+		RWT_OutputOptions()
+		{ }
+
+	}; // end of RWT_OutputOptions
 
 	/** @} */  // ----------- end of data types ---------------
 
@@ -144,6 +164,17 @@ namespace rwt
 
 	/** Build an OpenGL representation of the world */
 	void world_to_opengl(const RWT_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
+
+	/** Simulate an arbitrarily complex robot path (given an input sequence of waypoints),
+	  * a world model and a set of sensor and output parameters.
+	  */
+	void simulate_rwt_dataset(
+		const std::vector<mrpt::math::TPoint3D>    waypoints,
+		const RWT_World                          & world,
+		const RWT_PathOptions                    & pathParams   = RWT_PathOptions(),
+		const RWT_SensorOptions                  & sensorParams = RWT_SensorOptions(),
+		const RWT_OutputOptions                  & outputParams = RWT_OutputOptions()
+		);
 
 
 	/** @} */  // ----------- end of API ---------------
