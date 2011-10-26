@@ -19,6 +19,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/system/filesystem.h> // For ASSERT_FILE_EXISTS_
 
 #include "rwt.h"
 
@@ -39,6 +40,7 @@ int main(int argc, char**argv)
 		}
 
 		const string sFil = string(argv[1]);
+		ASSERT_FILE_EXISTS_(sFil)
 
 		// Compile ----------------------------
 		cout << "Compiling...\n"; cout.flush();
@@ -69,7 +71,7 @@ int main(int argc, char**argv)
 		}
 
 		// Display ----------------------------
-		mrpt::gui::CDisplayWindow3D win3D("RWC compiled world",640,480);
+		mrpt::gui::CDisplayWindow3D win3D("RWL compilation result",640,480);
 		win3D.getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
 
 		mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
