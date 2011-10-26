@@ -32,11 +32,12 @@
 #include <limits>
 #include <stack>
 
-#include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/graphs.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/graphs.h>
 
 #include "rwt-utils.h"  // Useful MACROS, etc.
 
@@ -141,8 +142,19 @@ namespace rwt
 
 	struct RWT_OutputOptions
 	{
-		RWT_OutputOptions()
+		RWT_OutputOptions() :
+			is_binary   (false)
 		{ }
+
+		bool  is_binary; // true: use outfile_bin_rawlog; false: use outfile_text_*
+		// The following file streams must be opened by the caller to \a simulate_rwt_dataset
+
+		// Binary output:
+		mrpt::utils::CFileGZOutputStream  output_bin_rawlog;
+
+		// Text output:
+		std::ofstream   output_text_sensor;
+		std::ofstream   output_text_odometry;
 
 	}; // end of RWT_OutputOptions
 
@@ -171,9 +183,9 @@ namespace rwt
 	void simulate_rwt_dataset(
 		const std::vector<mrpt::math::TPoint3D>    waypoints,
 		const RWT_World                          & world,
-		const RWT_PathOptions                    & pathParams   = RWT_PathOptions(),
-		const RWT_SensorOptions                  & sensorParams = RWT_SensorOptions(),
-		const RWT_OutputOptions                  & outputParams = RWT_OutputOptions()
+		const RWT_PathOptions                    & pathParams,
+		const RWT_SensorOptions                  & sensorParams,
+		RWT_OutputOptions                        & outputParams
 		);
 
 
