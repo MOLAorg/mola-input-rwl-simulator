@@ -22,6 +22,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/random.h>
 
 #include "rwt.h"
 
@@ -66,6 +67,12 @@ int main(int argc, char**argv)
 
 		// Run the program to build the world ----------------
 		RWT_World the_world;
+
+		const int random_seed = cfg.read_int("world","random_seed",-1 /* default val */);
+		if (random_seed<0)
+		     mrpt::random::randomGenerator.randomize();
+		else mrpt::random::randomGenerator.randomize(random_seed);
+
 
 		cout << "[2>] Building world...\n"; cout.flush();
 		if (!run_rwt_program(program,the_world))
@@ -138,12 +145,34 @@ int main(int argc, char**argv)
 		// load the rest of options:
 		// ------------------------------
 		RWT_PathOptions     pathParams;
+
 		RWT_SensorOptions   sensorParams;
+
 		RWT_OutputOptions   outputParams;
+
+		if (outputParams.is_binary)
+		{
+			// ...
+		}
+		else
+		{
+			const string sOutSensor = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
+			//const string sOutOdometry = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
+
+			outputParams.output_text_sensor.open(sOutSensor.c_str());
+			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
+
+		}
 
 		// And launch simulation:
 		// ----------------------------
 		cout << "[4>] Running simulator...\n"; cout.flush();
+
+		const int random_seed_sensor = cfg.read_int("sensor","random_seed",-1 /* default val */);
+		if (random_seed_sensor<0)
+		     mrpt::random::randomGenerator.randomize();
+		else mrpt::random::randomGenerator.randomize(random_seed_sensor);
+
 
 		simulate_rwt_dataset(simulation_waypoints, the_world, pathParams, sensorParams, outputParams);
 
