@@ -18,20 +18,18 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-//#include <mrpt/utils/CTextFileLinesParser.h>
-//#include <mrpt/system/string_utils.h>
-//#include <mrpt/slam/CSimplePointsMap.h>
-//#include <mrpt/poses/CPose3D.h>
-//#include <mrpt/math/lightweight_geom_data.h>
-//#include <mrpt/graphs.h>
-
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
 
 #include "rwt.h"
 
 using namespace rwt;
 using namespace std;
+
+// Aux funcs:
+string completePath(const string &abs_or_relative_path, const string &script_base_filename);
 
 // ---------------
 //      Main
@@ -42,32 +40,40 @@ int main(int argc, char**argv)
 	{
 		if (argc!=2)
 		{
-			cout << "Usage:\n" << argv[0] << " input_file.rwt\n";
+			cout << "Usage:\n" << argv[0] << " dataset-script.cfg\n";
 			return 1;
 		}
 
-		const string sFil = string(argv[1]);
+		const string sCfgFil = string(argv[1]);
+		ASSERT_FILE_EXISTS_(sCfgFil)
+
+		// Parse cfg file:
+		mrpt::utils::CConfigFile  cfg(sCfgFil);
+
+		// Get input RWL file:
+		string sFil = cfg.read_string("world","input","", true /* fail if not found*/ );
+		sFil = completePath(sFil,sCfgFil);
 
 		// Compile ----------------------------
-		cout << "Compiling...\n"; cout.flush();
+		cout << "[1>] Compiling '"<< sFil << "'...\n"; cout.flush();
 		RWT_Program program;
 		if (!compile_rwt_program(sFil,program))
 		{
 			cerr << "*ERROR* Program compilation failed\n";
 			return 1;
 		}
-		cout << "Compilation succeeded!\n";
+		cout << "[1<] Compilation succeeded!\n";
 
 		// Run ----------------------------
 		RWT_World the_world;
 
-		cout << "Building world...\n"; cout.flush();
+		cout << "[2>] Building world...\n"; cout.flush();
 		if (!run_rwt_program(program,the_world))
 		{
 			cerr << "*ERROR* Program compilation failed\n";
 			return 1;
 		}
-		cout << "World contruction succeeded!\n";
+		cout << "[2<] World contruction succeeded!\n";
 		// Stats:
 		if (1)
 		{
@@ -77,46 +83,18 @@ int main(int argc, char**argv)
 		}
 
 		// Display ----------------------------
-		mrpt::gui::CDisplayWindow3D win3D("RWC compiled world",640,480);
+		mrpt::gui::CDisplayWindow3D win3D("RWL compilation result",640,480);
 		win3D.getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
 
-		mrpt::opengl::CPointCloudPtr gl_LMs =mrpt::opengl::CPointCloud::Create();
-		gl_LMs->loadFromPointsMap( &the_world.landmarks);
-		gl_LMs->setPointSize(2.0);
-		gl_LMs->setColor_u8(220,220,220);
-
-		mrpt::opengl::CPointCloudPtr gl_Nodes =mrpt::opengl::CPointCloud::Create();
-		gl_Nodes->loadFromPointsMap( &the_world.nodes );
-		gl_Nodes->setPointSize(5.0);
-		gl_Nodes->setColor_u8(255,0,0);
-
-		mrpt::opengl::CSetOfLinesPtr gl_edges =mrpt::opengl::CSetOfLines::Create();
-		gl_edges->setLineWidth(1);
-		gl_edges->setColor_u8( mrpt::utils::TColor(0,0,220));
-
-		for (RWT_adjacency_graph::const_iterator it=the_world.graph.begin();it!=the_world.graph.end();++it)
-		{
-			const size_t idx1 = it->first.first;
-			float x1,y1,z1;
-			the_world.nodes.getPoint(idx1, x1,y1,z1);
-
-			const size_t idx2 = it->first.second;
-			float x2,y2,z2;
-			the_world.nodes.getPoint(idx2, x2,y2,z2);
-
-			gl_edges->appendLine(x1,y1,z1, x2,y2,z2);
-		}
+		mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
+		rwt::world_to_opengl(the_world, *gl_world);
 
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
-
-		scene->insert( gl_LMs );
-		scene->insert( gl_Nodes );
-		scene->insert( gl_edges );
-
+		scene->insert( gl_world );
 		win3D.unlockAccess3DScene();
+
 		win3D.repaint();
 		win3D.waitForKey();
-
 
 		return 0;
 	} catch (exception &e) {
@@ -125,4 +103,23 @@ int main(int argc, char**argv)
 	}
 }
 
+
+// Aux. func for adding a path prefix as needed.
+string completePath(const string &abs_or_relative_path, const string &script_base_filename)
+{
+	const string sFil = mrpt::system::trim(abs_or_relative_path);
+
+	// Is it an absolute path?
+	if (!sFil.empty() && ( sFil[0]=='/' || sFil[0]=='\\' || sFil[1]==':' ) ) {
+		// It's absolute, we're done.
+		return sFil;
+	}
+	else {
+		// It's relative to the config file path:
+		return mrpt::system::filePathSeparatorsToNative(
+			mrpt::system::extractFileDirectory(script_base_filename) +
+			string("/") +
+			sFil );
+	}
+}
 
