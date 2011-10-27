@@ -100,7 +100,15 @@ namespace rwt
 				}
 			}
 
-			//cout << "Valid observed landmarks: " << lst_observed_landmarks.size() << endl;
+			if (sim.show_live_3D && sim.win3D)
+			{
+				mrpt::gui::CDisplayWindow3D* win = const_cast<mrpt::gui::CDisplayWindow3D*>(sim.win3D.pointer()); // Well...yeah!
+				win->addTextMessage(
+					5,5,
+					mrpt::format("Observed LMs: %u",static_cast<unsigned int>(lst_observed_landmarks.size()) ),
+					mrpt::utils::TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE,
+					1000 /* unique ID */ );
+			}
 
 			// Output:
 			if (is_binary)
