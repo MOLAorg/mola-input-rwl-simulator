@@ -19,68 +19,12 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rwt.h"
+#include "rwt-sensor-simulators.h" // Declaration of abstract (and particular) sensor classes.
 
-#include <mrpt/obs.h>
-#include <memory>  // for auto_ptr<>
+#include <mrpt/system/threads.h>  // for sleep()
 
 using namespace rwt;
 using namespace std;
-
-
-struct SimulContext
-{
-	SimulContext() :
-		curPose       ( ),
-		step_count    (0),
-		next_waypoint (0)
-	{ }
-
-	mrpt::poses::CPose3D curPose;  // The current robot pose in the world.
-	size_t   step_count;
-	size_t   next_waypoint;  // The waypoint we're right now heading to.
-};
-
-
-/** Virtual base class for all sensor simulator */
-struct SensorSimulBase
-{
-	SensorSimulBase(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
-		m_world(world),
-		m_sensorParams(sensorParams)
-	{ }
-
-	const RWT_World          & m_world;
-	const RWT_SensorOptions  & m_sensorParams;
-
-	virtual void simulate(
-		const SimulContext           & sim,
-		const bool                     is_binary,
-		mrpt::slam::CObservationPtr  & out_observation_bin,
-		std::string                  & out_observation_text
-		) = 0;
-}; // end of SensorSimulBase
-
-typedef std::auto_ptr<SensorSimulBase>  SensorSimulBasePtr;
-
-/** Virtual base class for all sensor simulator */
-struct SensorSimul_Camera : public SensorSimulBase
-{
-	SensorSimul_Camera(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
-		SensorSimulBase(world,sensorParams)
-	{ }
-
-	virtual void simulate(
-		const SimulContext           & sim,
-		const bool                     is_binary,
-		mrpt::slam::CObservationPtr  & out_observation_bin,
-		std::string                  & out_observation_text
-		)
-	{
-		//this->m_world.
-
-
-	}
-}; // end of SensorSimul_Camera
 
 
 // This is the main body of the simulator:
@@ -102,6 +46,7 @@ void rwt::simulate_rwt_dataset(
 	// Create sensor:
 	SensorSimulBasePtr sensor = SensorSimulBasePtr(new SensorSimul_Camera(world,sensorParams) );
 
+	mrpt::opengl::CRenderizablePtr gl_robot; // Cache this pointer to avoid looking for it with each iteration.
 
 	for ( ; sim.next_waypoint<nWayPoints; ++sim.step_count)
 	{
@@ -112,21 +57,79 @@ void rwt::simulate_rwt_dataset(
 
 		sensor->simulate(sim, isBinary, new_obs_bin, new_obs_txt );
 
-		// Save to files:
-		// -----------------------------------------------
-		if (isBinary)
+		// Update 3D view?
+		// ----------------------------
+		if (outputParams.show_live_3D)
 		{
-			outputParams.output_bin_rawlog << new_obs_bin;
-		}
-		else
-		{
-			outputParams.output_text_sensor << new_obs_txt;
+			// Lock:
+			mrpt::opengl::COpenGLScenePtr &scene = outputParams.win3D->get3DSceneAndLock();
+
+			if (!gl_robot)
+			{
+				gl_robot = scene->getByName("robot");
+				if (!gl_robot)
+				{
+					mrpt::opengl::CSetOfObjectsPtr gl_rob = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f,2.0f);
+					gl_rob->setName("robot");
+					scene->insert(gl_rob);
+					gl_robot = gl_rob;
+				}
+			}
+			// Update robot representation pose:
+			gl_robot->setPose(sim.curPose);
+
+			// Unlock:
+			outputParams.win3D->unlockAccess3DScene();
+
+			outputParams.win3D->repaint();
+			mrpt::system::sleep( outputParams.show_live_3D_sleep_ms );
 		}
 
+		// Save observations & groundtruth to files:
+		// -----------------------------------------------
+		if (isBinary)
+		       outputParams.output_bin_rawlog << new_obs_bin;
+		else   outputParams.output_text_sensor << new_obs_txt;
+
+		// GT pose: Save as quaternion since its meaning is clear and unambiguous for everyone:
+		const mrpt::poses::CPose3DQuat curPoseQuat = mrpt::poses::CPose3DQuat(sim.curPose);
+		outputParams.output_text_groundtruth << mrpt::format("%6u %f %f %f %f %f %f %f\n",
+			static_cast<unsigned int>(sim.step_count),
+			curPoseQuat.x(),curPoseQuat.y(),curPoseQuat.z(),
+			curPoseQuat.quat().r(), curPoseQuat.quat().x(), curPoseQuat.quat().y(), curPoseQuat.quat().z() );
 
 		// Move the robot:
 		// -----------------------------------------------
-		++sim.next_waypoint;
+		// Next waypoint Absolute coords
+		const mrpt::math::TPoint3D & nextWp = waypoints[sim.next_waypoint];
+
+		// In spherical coords:
+		double wp_r, wp_yaw, wp_pitch;
+		sim.curPose.sphericalCoordinates(nextWp, wp_r, wp_yaw, wp_pitch);
+
+		// Are we already heading towards the next waypoint?
+		if (std::abs(wp_yaw)<1e-3 && std::abs(wp_pitch)<1e-3)
+		{
+			// Move straight:
+			const double move_dist = std::min(wp_r, pathParams.max_step_lin );
+			sim.curPose += mrpt::poses::CPose3D(move_dist,0,0, 0,0,0);
+		}
+		else
+		{
+			const double maxR = pathParams.max_step_ang;
+
+			// Rotate:
+			const double Ayaw   = std::min( std::max(-maxR,wp_yaw  ), maxR);
+			const double Apitch = std::min( std::max(-maxR,wp_pitch), maxR);
+
+			sim.curPose += mrpt::poses::CPose3D(0,0,0, Ayaw,Apitch,0);
+		}
+
+		// Close enough?
+		if ( sim.curPose.distance3DTo(nextWp.x,nextWp.y,nextWp.z)<1e-3 )
+		{
+			++sim.next_waypoint;
+		}
 
 	} // end while
 
