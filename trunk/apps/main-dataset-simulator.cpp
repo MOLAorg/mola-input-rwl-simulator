@@ -18,7 +18,6 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
@@ -90,20 +89,24 @@ int main(int argc, char**argv)
 		}
 
 		// Display ----------------------------
-		if (1)
+		mrpt::gui::CDisplayWindow3DPtr win3D;
+
+		const bool  show_live_3D = cfg.read_bool("path","show_live_3D", true);
+
+		if (show_live_3D )
 		{
-			mrpt::gui::CDisplayWindow3D win3D("RWL compilation result",640,480);
-			win3D.getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
+			win3D = mrpt::gui::CDisplayWindow3D::Create("RWL compilation result",640,480);
+			win3D->getDefaultViewport()->setCustomBackgroundColor( mrpt::utils::TColorf(0.2f,0.2f,0.2f) );
 
 			mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
 			rwt::world_to_opengl(the_world, *gl_world);
 
-			mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+			mrpt::opengl::COpenGLScenePtr &scene = win3D->get3DSceneAndLock();
 			scene->insert( gl_world );
-			win3D.unlockAccess3DScene();
+			win3D->unlockAccess3DScene();
 
-			win3D.repaint();
-			//win3D.waitForKey();
+			win3D->repaint();
+			//win3D->waitForKey();
 		}
 
 		// --------------------------------------------------------
@@ -145,23 +148,35 @@ int main(int argc, char**argv)
 		// load the rest of options:
 		// ------------------------------
 		RWT_PathOptions     pathParams;
+		pathParams.max_step_lin = cfg.read_double("path","max_step_lin", 0.10);
+		pathParams.max_step_ang = mrpt::utils::DEG2RAD( cfg.read_double("path","max_step_ang", 10) );
 
 		RWT_SensorOptions   sensorParams;
 
 		RWT_OutputOptions   outputParams;
+		outputParams.win3D = win3D;
+		outputParams.show_live_3D = win3D.present();
+		outputParams.show_live_3D_sleep_ms = cfg.read_int("path","show_live_3D_sleep_ms", 10);
+
 
 		if (outputParams.is_binary)
 		{
-			// ...
+			THROW_EXCEPTION("TO DO")
 		}
 		else
 		{
-			const string sOutSensor = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
 			//const string sOutOdometry = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
 
+			const string sOutSensor = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
 			outputParams.output_text_sensor.open(sOutSensor.c_str());
 			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
 
+			const string sOutGT     = cfg.read_string("dataset-format","output_text_gt", "", true /* fail if not present */) ;
+			outputParams.output_text_groundtruth.open(sOutGT.c_str());
+			ASSERTMSG_(outputParams.output_text_groundtruth.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGT.c_str() ) )
+			outputParams.output_text_groundtruth <<
+				"# STEP     X       Y        Z        QR        QX      QY      QZ     \n"
+				"# --------------------------------------------------------------------\n";
 		}
 
 		// And launch simulation:

@@ -15,7 +15,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${${PROJECT_NAME}_BINARY_DIR}/bin CACHE PATH "Output 
 #   The dependencies of a library are automatically added, so you only
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE( MRPT REQUIRED base maps obs gui graphs)
+FIND_PACKAGE( MRPT REQUIRED base maps obs gui graphs vision)
 
 INCLUDE_DIRECTORIES(${${PROJECT_NAME}_SOURCE_DIR}/include)
 

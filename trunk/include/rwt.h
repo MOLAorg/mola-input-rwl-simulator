@@ -38,6 +38,7 @@
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/graphs.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 
 #include "rwt-utils.h"  // Useful MACROS, etc.
 
@@ -128,9 +129,13 @@ namespace rwt
 
 	struct RWT_PathOptions
 	{
-		RWT_PathOptions()
+		RWT_PathOptions() :
+			max_step_lin(0.1),
+			max_step_ang(mrpt::utils::DEG2RAD(10))
 		{ }
 
+		double max_step_lin; //!< meters
+		double max_step_ang; //!< radians
 	}; // end of RWT_PathOptions
 
 	struct RWT_SensorOptions
@@ -143,18 +148,30 @@ namespace rwt
 	struct RWT_OutputOptions
 	{
 		RWT_OutputOptions() :
+			win3D(),
+			show_live_3D(false),
+			show_live_3D_sleep_ms(10),
 			is_binary   (false)
-		{ }
+		{
+		}
+
+		mrpt::gui::CDisplayWindow3DPtr win3D; //!< If not an empty smart pointer, the window to show simulation live.
+
+		bool  show_live_3D; //!< true: Update the robot path, etc. in the 3D view
+		int   show_live_3D_sleep_ms;
 
 		bool  is_binary; // true: use outfile_bin_rawlog; false: use outfile_text_*
 		// The following file streams must be opened by the caller to \a simulate_rwt_dataset
 
-		// Binary output:
+		// Sensor: Binary output:
 		mrpt::utils::CFileGZOutputStream  output_bin_rawlog;
 
-		// Text output:
+		// Sensor: Text output:
 		std::ofstream   output_text_sensor;
 		std::ofstream   output_text_odometry;
+
+		// Path ground truth:
+		std::ofstream   output_text_groundtruth;
 
 	}; // end of RWT_OutputOptions
 
