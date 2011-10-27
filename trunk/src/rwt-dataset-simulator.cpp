@@ -39,6 +39,9 @@ void rwt::simulate_rwt_dataset(
 	using namespace mrpt::utils; // Needed by the CStream "<<" operator.
 
 	SimulContext sim;
+	// Set extra params:
+	sim.show_live_3D = outputParams.show_live_3D;
+	sim.win3D        = outputParams.win3D;
 
 	const size_t nWayPoints = waypoints.size();
 	const bool   isBinary   = outputParams.is_binary;

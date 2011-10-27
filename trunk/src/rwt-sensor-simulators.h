@@ -31,12 +31,18 @@ namespace rwt
 		SimulContext() :
 			curPose       ( ),
 			step_count    (0),
-			next_waypoint (0)
+			next_waypoint (0),
+
+			show_live_3D  (false),
+			win3D()
 		{ }
 
 		mrpt::poses::CPose3D curPose;  // The current robot pose in the world.
 		size_t   step_count;
 		size_t   next_waypoint;  // The waypoint we're right now heading to.
+
+		bool show_live_3D;
+		mrpt::gui::CDisplayWindow3DPtr win3D;
 	};
 
 

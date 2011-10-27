@@ -213,10 +213,11 @@ string completePath(const string &abs_or_relative_path, const string &script_bas
 	}
 	else {
 		// It's relative to the config file path:
-		return mrpt::system::filePathSeparatorsToNative(
-			mrpt::system::extractFileDirectory(script_base_filename) +
-			string("/") +
-			sFil );
+		string basedir = mrpt::system::extractFileDirectory(script_base_filename);
+		if (!basedir.empty() && (*basedir.rbegin()!='/' && *basedir.rbegin()!='\\') )
+			basedir.push_back('/');
+
+		return mrpt::system::filePathSeparatorsToNative(basedir+sFil);
 	}
 }
 
