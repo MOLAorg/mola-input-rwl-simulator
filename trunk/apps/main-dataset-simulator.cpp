@@ -165,18 +165,41 @@ int main(int argc, char**argv)
 		}
 		else
 		{
-			//const string sOutOdometry = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
+			const string sOutFilesPrefix = cfg.read_string("dataset-format","output_files_prefix", "OUT_", true /* fail if not present */) ;
 
-			const string sOutSensor = cfg.read_string("dataset-format","output_text_sensor", "", true /* fail if not present */) ;
+			cout << "Preparing result files..."; cout.flush();
+
+			const string sOutSensor = sOutFilesPrefix + string("_SENSOR.txt");
 			outputParams.output_text_sensor.open(sOutSensor.c_str());
 			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
+			outputParams.output_text_sensor <<
+				"# STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
+				"# -------------------------------------------------------------------\n";
 
-			const string sOutGT     = cfg.read_string("dataset-format","output_text_gt", "", true /* fail if not present */) ;
+			const string sOutGT = sOutFilesPrefix + string("_GT_PATH.txt");
 			outputParams.output_text_groundtruth.open(sOutGT.c_str());
 			ASSERTMSG_(outputParams.output_text_groundtruth.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGT.c_str() ) )
 			outputParams.output_text_groundtruth <<
 				"# STEP     X       Y        Z        QR        QX      QY      QZ     \n"
 				"# --------------------------------------------------------------------\n";
+
+			const string sOutGTMap = sOutFilesPrefix + string("_GT_MAP.txt");
+			std::ofstream fOutGTMap(sOutGTMap.c_str());
+			ASSERTMSG_(fOutGTMap.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGTMap.c_str() ) )
+			fOutGTMap <<
+				"# LANDMARK_ID     X             Y              Z        \n"
+				"# ------------------------------------------------------\n";
+
+
+			const std::vector<float> & lm_xs = the_world.landmarks.getPointsBufferRef_x();
+			const std::vector<float> & lm_ys = the_world.landmarks.getPointsBufferRef_y();
+			const std::vector<float> & lm_zs = the_world.landmarks.getPointsBufferRef_z();
+
+			const size_t N = lm_xs.size();
+			for (unsigned int i=0;i<N;i++)
+				fOutGTMap << mrpt::format("%6u  %14f %14f %14f\n",i,lm_xs[i],lm_ys[i],lm_zs[i]);
+
+			cout << "Done.\n"; cout.flush();
 		}
 
 		// And launch simulation:
