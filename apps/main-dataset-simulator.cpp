@@ -187,9 +187,9 @@ int main(int argc, char**argv)
 			std::ofstream fOutGTMap(sOutGTMap.c_str());
 			ASSERTMSG_(fOutGTMap.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGTMap.c_str() ) )
 			fOutGTMap <<
-				"# LANDMARK_ID     X             Y              Z        \n"
-				"# ------------------------------------------------------\n";
-
+				"# Landmark ground truth global positions (first row is for LM index=0, next is 1 and so on)\n"
+				"#    X             Y              Z        \n"
+				"# -----------------------------------------\n";
 
 			const std::vector<float> & lm_xs = the_world.landmarks.getPointsBufferRef_x();
 			const std::vector<float> & lm_ys = the_world.landmarks.getPointsBufferRef_y();
@@ -197,7 +197,7 @@ int main(int argc, char**argv)
 
 			const size_t N = lm_xs.size();
 			for (unsigned int i=0;i<N;i++)
-				fOutGTMap << mrpt::format("%6u  %14f %14f %14f\n",i,lm_xs[i],lm_ys[i],lm_zs[i]);
+				fOutGTMap << mrpt::format("%14f %14f %14f\n",lm_xs[i],lm_ys[i],lm_zs[i]);
 
 			cout << "Done.\n"; cout.flush();
 		}
