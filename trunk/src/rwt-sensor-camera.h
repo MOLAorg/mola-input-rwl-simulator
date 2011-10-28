@@ -82,21 +82,24 @@ namespace rwt
 				double lx,ly,lz;
 				cam_pose.inverseComposePoint(gx,gy,gz, lx,ly,lz);
 
-				TPixelCoordf px;
-				mrpt::vision::pinhole::projectPoint_with_distortion(
-					mrpt::math::TPoint3D(lx,ly,lz),
-					m_camera_params, px,
-					false /* don't accept points behind our back */
-					);
-
-				// Add noise:
-				px.x += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
-				px.y += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
-
-				if (px.x>0 && px.x<m_camera_params.ncols &&
-				    px.y>0 && px.y<m_camera_params.nrows )
+				if (lz>0)
 				{
-					lst_observed_landmarks.push_back( std::make_pair<size_t,TPixelCoordf>(idxLM,px) );
+					TPixelCoordf px;
+					mrpt::vision::pinhole::projectPoint_with_distortion(
+						mrpt::math::TPoint3D(lx,ly,lz),
+						m_camera_params, px,
+						true /* no need to filter points behind our back; done already */
+						);
+
+					// Add noise:
+					px.x += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
+					px.y += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
+
+					if (px.x>0 && px.x<m_camera_params.ncols &&
+					    px.y>0 && px.y<m_camera_params.nrows )
+					{
+						lst_observed_landmarks.push_back( std::make_pair<size_t,TPixelCoordf>(idxLM,px) );
+					}
 				}
 			}
 
