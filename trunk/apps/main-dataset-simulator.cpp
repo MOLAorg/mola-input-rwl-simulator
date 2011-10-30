@@ -147,11 +147,14 @@ int main(int argc, char**argv)
 
 		// load the rest of options:
 		// ------------------------------
+		const string sOutFilesPrefix = cfg.read_string("dataset-format","output_files_prefix", "OUT_", true /* fail if not present */) ;
+
 		RWT_PathOptions     pathParams;
 		pathParams.max_step_lin = cfg.read_double("path","max_step_lin", 0.10);
 		pathParams.max_step_ang = mrpt::utils::DEG2RAD( cfg.read_double("path","max_step_ang", 10) );
 
 		RWT_SensorOptions   sensorParams;
+		sensorParams.sOutFilesPrefix=sOutFilesPrefix;
 
 		RWT_OutputOptions   outputParams;
 		outputParams.win3D = win3D;
@@ -165,8 +168,6 @@ int main(int argc, char**argv)
 		}
 		else
 		{
-			const string sOutFilesPrefix = cfg.read_string("dataset-format","output_files_prefix", "OUT_", true /* fail if not present */) ;
-
 			cout << "Preparing result files..."; cout.flush();
 
 			const string sOutSensor = sOutFilesPrefix + string("_SENSOR.txt");

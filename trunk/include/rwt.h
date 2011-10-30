@@ -143,6 +143,8 @@ namespace rwt
 		RWT_SensorOptions()
 		{ }
 
+		std::string  sOutFilesPrefix; //!< For dumping extra sets of parameters used in simulation, for future reference.
+
 	}; // end of RWT_SensorOptions
 
 	struct RWT_OutputOptions

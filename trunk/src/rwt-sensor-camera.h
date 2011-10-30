@@ -22,6 +22,7 @@
 
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/random.h>
+#include <mrpt/utils/CConfigFile.h>
 
 namespace rwt
 {
@@ -51,6 +52,10 @@ namespace rwt
 
 			m_camera_params.fx(m_camera_params.ncols);
 			m_camera_params.fy(m_camera_params.ncols);
+
+			// Save output param files:
+			const string sOutCAMCALIB = sensorParams.sOutFilesPrefix + string("_CAMCALIB.txt");
+			m_camera_params.saveToConfigFile("CAMERA", mrpt::utils::CConfigFile(sOutCAMCALIB)); 
 		}
 
 		virtual void simulate(
