@@ -62,10 +62,12 @@ namespace rwt
 			const SimulContext           & sim,
 			const bool                     is_binary,
 			mrpt::slam::CObservationPtr  & out_observation_bin,
-			std::string                  & out_observation_text
+			std::string                  & out_observation_text,
+			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
 			)
 		{
 			const mrpt::poses::CPose3D cam_pose = sim.curPose + m_camera_pose_on_robot;
+			out_GT_sensor_pose = mrpt::poses::CPose3DQuat(cam_pose);
 
 			// Get the list of closest LMs using the KD-tree:
 			vector<pair<int,float> > nearby_LMs;

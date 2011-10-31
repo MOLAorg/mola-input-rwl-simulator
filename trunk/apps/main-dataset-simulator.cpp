@@ -181,6 +181,7 @@ int main(int argc, char**argv)
 			outputParams.output_text_groundtruth.open(sOutGT.c_str());
 			ASSERTMSG_(outputParams.output_text_groundtruth.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGT.c_str() ) )
 			outputParams.output_text_groundtruth <<
+				"# Ground truth path of the SENSOR (not the robot)                     \n"
 				"# STEP     X       Y        Z        QR        QX      QY      QZ     \n"
 				"# --------------------------------------------------------------------\n";
 
