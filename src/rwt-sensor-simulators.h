@@ -61,7 +61,8 @@ namespace rwt
 			const SimulContext           & sim,
 			const bool                     is_binary,
 			mrpt::slam::CObservationPtr  & out_observation_bin,
-			std::string                  & out_observation_text
+			std::string                  & out_observation_text,
+			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
 			) = 0;
 	}; // end of SensorSimulBase
 

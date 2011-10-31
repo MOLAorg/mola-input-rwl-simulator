@@ -58,7 +58,8 @@ void rwt::simulate_rwt_dataset(
 		mrpt::slam::CObservationPtr  new_obs_bin;
 		std::string                  new_obs_txt;
 
-		sensor->simulate(sim, isBinary, new_obs_bin, new_obs_txt );
+		mrpt::poses::CPose3DQuat sensor_GT_Pose;
+		sensor->simulate(sim, isBinary, new_obs_bin, new_obs_txt, sensor_GT_Pose);
 
 		// Update 3D view?
 		// ----------------------------
@@ -95,11 +96,10 @@ void rwt::simulate_rwt_dataset(
 		else   outputParams.output_text_sensor << new_obs_txt;
 
 		// GT pose: Save as quaternion since its meaning is clear and unambiguous for everyone:
-		const mrpt::poses::CPose3DQuat curPoseQuat = mrpt::poses::CPose3DQuat(sim.curPose);
 		outputParams.output_text_groundtruth << mrpt::format("%6u %f %f %f %f %f %f %f\n",
 			static_cast<unsigned int>(sim.step_count),
-			curPoseQuat.x(),curPoseQuat.y(),curPoseQuat.z(),
-			curPoseQuat.quat().r(), curPoseQuat.quat().x(), curPoseQuat.quat().y(), curPoseQuat.quat().z() );
+			sensor_GT_Pose.x(),sensor_GT_Pose.y(),sensor_GT_Pose.z(),
+			sensor_GT_Pose.quat().r(), sensor_GT_Pose.quat().x(), sensor_GT_Pose.quat().y(), sensor_GT_Pose.quat().z() );
 
 		// Move the robot:
 		// -----------------------------------------------
