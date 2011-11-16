@@ -20,8 +20,11 @@
 
 #include "rwt.h"
 
+#include <mrpt/random.h>
+
 using namespace rwt;
 using namespace std;
+using namespace mrpt::random;
 
 struct RWT_run_context
 {
@@ -166,6 +169,30 @@ bool run_rwt_cmd(
 			//RWT_MESSAGE << "LM: " << gx << ", " << gy << ", " << gz << endl;
 		}
 		break;
+	case PRIM_LANDMARK_RANDOM:
+		{
+			if (cmd.args.size()!=6)
+				throw std::runtime_error("*ERROR* LM_RANDOM: 6 arguments expected!\n");
+
+			// Get relative coords:
+			const double min_x = rwt::str2num(cmd.args[0]);
+			const double max_x = rwt::str2num(cmd.args[1]);
+			const double min_y = rwt::str2num(cmd.args[2]);
+			const double max_y = rwt::str2num(cmd.args[3]);
+			const double min_z = rwt::str2num(cmd.args[4]);
+			const double max_z = rwt::str2num(cmd.args[5]);
+
+			// Draw sample:
+			const double lx = randomGenerator.drawUniform(min_x,max_x);
+			const double ly = randomGenerator.drawUniform(min_y,max_y);
+			const double lz = randomGenerator.drawUniform(min_z,max_z);
+
+			// Convert to global:
+			double gx,gy,gz;
+			cntx.cursor.composePoint(lx,ly,lz, gx,gy,gz);
+			cntx.out_world.landmarks.insertPointFast(gx,gy,gz); // "Fast" means the KD-tree will not be marked as invalid, but we don't mind that here.
+		}
+		break;
 	case PRIM_NODE:
 		{
 			if (cmd.args.size()!=0 && cmd.args.size()!=3 )
@@ -241,6 +268,22 @@ bool run_rwt_cmd(
 
 			for (size_t i=0;i<num_calls;i++)
 				recursive_run_rwt_program(it_lst,cntx);
+		}
+		break;
+	case PRIM_RANDOMIZE:
+		{
+			if (cmd.args.size()!=0 && cmd.args.size()!=1 )
+				throw std::runtime_error("*ERROR* RANDOMIZE: None or one arguments expected!\n");
+
+			if (cmd.args.size()==1)
+			{
+				const double fSeed = rwt::str2num(cmd.args[0]);
+				randomGenerator.randomize(static_cast<uint32_t>(fSeed));					
+			}
+			else
+			{
+				randomGenerator.randomize();					
+			}
 		}
 		break;
 	default:

@@ -58,9 +58,10 @@ namespace rwt
 		PRIM_X_SET, PRIM_Y_SET, PRIM_Z_SET, PRIM_YAW_SET, PRIM_PITCH_SET, PRIM_ROLL_SET,
 		PRIM_X_INC, PRIM_Y_INC, PRIM_Z_INC, PRIM_YAW_INC, PRIM_PITCH_INC, PRIM_ROLL_INC,
 		PRIM_PUSH, PRIM_POP,
-		PRIM_LANDMARK,
+		PRIM_LANDMARK, PRIM_LANDMARK_RANDOM,
 		PRIM_NODE,
-		PRIM_CALL
+		PRIM_CALL,
+		PRIM_RANDOMIZE
 	};
 
 	struct RWT_command
@@ -140,9 +141,12 @@ namespace rwt
 
 	struct RWT_SensorOptions
 	{
-		RWT_SensorOptions()
-		{ }
+		RWT_SensorOptions(mrpt::utils::CConfigFileBase &_cfg_file) 
+			: cfg_file(_cfg_file)
+		{ 
+		}
 
+		mrpt::utils::CConfigFileBase &cfg_file; //!< Source of extra parameters for loading upon construction
 		std::string  sOutFilesPrefix; //!< For dumping extra sets of parameters used in simulation, for future reference.
 
 	}; // end of RWT_SensorOptions

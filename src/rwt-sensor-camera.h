@@ -44,14 +44,24 @@ namespace rwt
 			m_camera_pose_on_robot(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90)),
 			m_camera_pixel_noise_std(0)
 		{
+			// Default camera params:
 			m_camera_params.ncols = 640;
 			m_camera_params.nrows = 480;
 
 			m_camera_params.cx(m_camera_params.ncols>>1);
 			m_camera_params.cy(m_camera_params.nrows>>1);
 
-			m_camera_params.fx(m_camera_params.ncols);
-			m_camera_params.fy(m_camera_params.ncols);
+			m_camera_params.fx(m_camera_params.ncols>>2);
+			m_camera_params.fy(m_camera_params.ncols>>2);
+
+			// Try loading custom params from cfg file, if set by the user:
+			try {
+				m_camera_params.loadFromConfigFile("sensor",sensorParams.cfg_file);
+			} catch(...) {
+				// Ignore error if user didn't set camera params, but issue at least a warning:
+				std::cerr << "WARNING: [sensor] section doesn't contain any camera parameters: Falling back to defaults.\n";
+			} 
+			m_maxRange = sensorParams.cfg_file.read_double("sensor","maxRange",m_maxRange);
 
 			// Save output param files:
 			const string sOutCAMCALIB = sensorParams.sOutFilesPrefix + string("_CAMCALIB.txt");
