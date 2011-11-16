@@ -37,12 +37,14 @@ namespace rwt
 		mrpt::poses::CPose3D  m_camera_pose_on_robot;
 		mrpt::utils::TCamera  m_camera_params;  //!< Camera description
 		float                 m_camera_pixel_noise_std;
+		unsigned int          m_check_min_features_per_frame; 
 
 		SensorSimul_Camera(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
 			SensorSimulBase(world,sensorParams),
 			m_maxRange(20),
 			m_camera_pose_on_robot(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90)),
-			m_camera_pixel_noise_std(0)
+			m_camera_pixel_noise_std(0),
+			m_check_min_features_per_frame(0)
 		{
 			// Default camera params:
 			m_camera_params.ncols = 640;
@@ -62,6 +64,7 @@ namespace rwt
 				std::cerr << "WARNING: [sensor] section doesn't contain any camera parameters: Falling back to defaults.\n";
 			} 
 			m_maxRange = sensorParams.cfg_file.read_double("sensor","maxRange",m_maxRange);
+			m_check_min_features_per_frame = sensorParams.cfg_file.read_uint64_t("sensor","check_min_features_per_frame",m_check_min_features_per_frame);
 
 			// Save output param files:
 			const string sOutCAMCALIB = sensorParams.sOutFilesPrefix + string("_CAMCALIB.txt");
@@ -119,6 +122,9 @@ namespace rwt
 					}
 				}
 			}
+
+			if (lst_observed_landmarks.size()<m_check_min_features_per_frame)
+				throw std::runtime_error(mrpt::format("ERROR: Minimum number of features established in 'check_min_features_per_frame' does not hold: #feats=%u at step=%u",static_cast<unsigned int>(lst_observed_landmarks.size()), static_cast<unsigned int>(sim.step_count) ));
 
 			if (sim.show_live_3D && sim.win3D)
 			{
