@@ -22,8 +22,6 @@
 
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/system/string_utils.h>
-//#include <mrpt/gui/CDisplayWindow3D.h>
-//#include <mrpt/opengl.h>
 
 using namespace rwt;
 using namespace std;
@@ -34,7 +32,7 @@ struct TStrings2Primitive
 	const RWT_primitive_t prim;
 };
 
-const size_t primitive_strings_count = 17;
+const size_t primitive_strings_count = 19;
 const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 	{ "X=", PRIM_X_SET },
 	{ "Y=", PRIM_Y_SET },
@@ -52,9 +50,14 @@ const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 
 	{ "PUSH", PRIM_PUSH },
 	{ "POP", PRIM_POP },
+
 	{ "LM", PRIM_LANDMARK },
+	{ "LM_RANDOM", PRIM_LANDMARK_RANDOM },
+
 	{ "NODE", PRIM_NODE },
-	{ "CALL", PRIM_CALL }
+	{ "CALL", PRIM_CALL },
+
+	{ "RANDOMIZE", PRIM_RANDOMIZE},
 };
 
 /** Compile an input RWT file into a program.

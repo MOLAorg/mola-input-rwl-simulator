@@ -153,7 +153,7 @@ int main(int argc, char**argv)
 		pathParams.max_step_lin = cfg.read_double("path","max_step_lin", 0.10);
 		pathParams.max_step_ang = mrpt::utils::DEG2RAD( cfg.read_double("path","max_step_ang", 10) );
 
-		RWT_SensorOptions   sensorParams;
+		RWT_SensorOptions   sensorParams(cfg);
 		sensorParams.sOutFilesPrefix=sOutFilesPrefix;
 
 		RWT_OutputOptions   outputParams;
