@@ -83,7 +83,7 @@ namespace rwt
 			out_GT_sensor_pose = mrpt::poses::CPose3DQuat(cam_pose);
 
 			// Get the list of closest LMs using the KD-tree:
-			vector<pair<int,float> > nearby_LMs;
+			vector<pair<size_t,float> > nearby_LMs;
 			this->m_world.landmarks.kdTreeRadiusSearch3D(
 				cam_pose.x(), cam_pose.y(), cam_pose.z(),
 				m_maxRange+0.1,
