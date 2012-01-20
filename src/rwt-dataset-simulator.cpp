@@ -122,7 +122,6 @@ void rwt::simulate_rwt_dataset(
 	const mrpt::system::TTimeStamp t_last = simul_path.rbegin()->first;
 	const mrpt::system::TTimeStamp At_step = (t_last-t0)/nDesiredTimeSteps;
 
-//	for ( ; sim.next_waypoint<nWayPoints; ++sim.step_count)
 	// Simulation takes places in the domain of "time": 
 	for (mrpt::system::TTimeStamp t = t0; t<(t_last+1e-4) ; t+=At_step)
 	{
