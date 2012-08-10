@@ -75,7 +75,7 @@ Execution of a program:
       * `X+= 2` means move 2 meters forwards (not in the global +X direction).
       * `YAW+=  90` means rotate 90º anticlockwise. 
       * `YAW+= -90` means rotate 90º clockwise. 
- 
+    * `X-= <VAL>`,`Y-= <VAL>`,...: Is identical to `X+= -<VAL>`,`Y+=- <VAL>`,...
   * *Stack*: Saves and restores the current state of the SE(3) cursor and the current node (see section 3 above).
     * `PUSH`
     * `POP`
