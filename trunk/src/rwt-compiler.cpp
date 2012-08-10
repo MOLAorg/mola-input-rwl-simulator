@@ -32,7 +32,7 @@ struct TStrings2Primitive
 	const RWT_primitive_t prim;
 };
 
-const size_t primitive_strings_count = 19;
+const size_t primitive_strings_count = 25;
 const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 	{ "X=", PRIM_X_SET },
 	{ "Y=", PRIM_Y_SET },
@@ -47,6 +47,13 @@ const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 	{ "YAW+=", PRIM_YAW_INC },
 	{ "PITCH+=", PRIM_PITCH_INC },
 	{ "ROLL+=", PRIM_ROLL_INC },
+
+	{ "X+=", PRIM_X_DEC },
+	{ "Y+=", PRIM_Y_DEC },
+	{ "Z+=", PRIM_Z_DEC },
+	{ "YAW+=", PRIM_YAW_DEC },
+	{ "PITCH+=", PRIM_PITCH_DEC },
+	{ "ROLL+=", PRIM_ROLL_DEC },
 
 	{ "PUSH", PRIM_PUSH },
 	{ "POP", PRIM_POP },
