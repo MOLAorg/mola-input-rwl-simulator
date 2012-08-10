@@ -47,6 +47,22 @@ void rwt::world_to_opengl(
 	gl_Nodes->setPointSize(5.0);
 	gl_Nodes->setColor_u8(255,0,0);
 
+	// Add node labels in a single object, so it can be shown/hiden by name:
+	mrpt::opengl::CSetOfObjectsPtr gl_NodeLabels = mrpt::opengl::CSetOfObjects::Create();
+	for (size_t i=0;i<the_world.nodes.size();i++)
+	{
+		float x,y,z;
+		the_world.nodes.getPoint(i,x,y,z);
+
+		mrpt::opengl::CTextPtr gl_txt = mrpt::opengl::CText::Create();
+		gl_txt->setLocation( x,y,z );
+		gl_txt->setString( mrpt::format("%u",static_cast<unsigned int>(i) ) );
+
+		gl_NodeLabels->insert(gl_txt);
+	}
+	gl_NodeLabels->setName("node_labels");
+	gl_NodeLabels->setVisibility(false);
+
 	mrpt::opengl::CSetOfLinesPtr gl_edges =mrpt::opengl::CSetOfLines::Create();
 	gl_edges->setLineWidth(1);
 	gl_edges->setColor_u8( mrpt::utils::TColor(0,0,220));
@@ -66,5 +82,6 @@ void rwt::world_to_opengl(
 
 	out_gl.insert( gl_LMs );
 	out_gl.insert( gl_Nodes );
+	out_gl.insert( gl_NodeLabels );
 	out_gl.insert( gl_edges );
 }

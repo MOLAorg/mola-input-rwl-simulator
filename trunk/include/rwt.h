@@ -197,7 +197,9 @@ namespace rwt
 	  */
 	bool run_rwt_program(const RWT_Program &program, RWT_World & out_world);
 
-	/** Build an OpenGL representation of the world */
+	/** Build an OpenGL representation of the world.
+	  * An opengl object named "node_labels" is created with all the node labels, but it's initially invisible. Get it and call setVisibility(true) to show.
+	  */
 	void world_to_opengl(const RWT_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
 
 	/** Simulate an arbitrarily complex robot path (given an input sequence of waypoints),

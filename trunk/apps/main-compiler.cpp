@@ -20,6 +20,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h> // For ASSERT_FILE_EXISTS_
+#include <mrpt/system/threads.h>    // for sleep()
 
 #include "rwt.h"
 
@@ -82,7 +83,35 @@ int main(int argc, char**argv)
 		win3D.unlockAccess3DScene();
 
 		win3D.repaint();
-		win3D.waitForKey();
+
+		bool end = false;
+		while (!end && win3D.isOpen())
+		{
+			if (win3D.keyHit())
+			{
+				const int c = win3D.getPushedKey();
+				switch (c)
+				{
+				case 27:
+				case 'q':
+				case 'Q':
+				case 13:
+					end = true;
+					break;
+
+				case 'l':
+				case 'L':
+					mrpt::opengl::CRenderizablePtr obj = gl_world->getByName("node_labels");
+					if (obj)
+					{
+						obj->setVisibility( !obj->isVisible() );
+						win3D.repaint();
+					}
+					break;
+				};
+				mrpt::system::sleep(10);
+			}
+		}
 
 		return 0;
 	} catch (exception &e) {
