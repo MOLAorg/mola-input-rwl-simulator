@@ -127,6 +127,7 @@ bool run_rwt_cmd(
 			cntx.cursor.setYawPitchRoll(y,p,val);
 		}
 		break;
+
 	case PRIM_X_INC:
 		cntx.cursor+=mrpt::poses::CPose3D( cntx.eval1st(cmd), 0 ,0, 0,0,0 );
 		break;
@@ -145,6 +146,26 @@ bool run_rwt_cmd(
 	case PRIM_ROLL_INC:
 		cntx.cursor+=mrpt::poses::CPose3D( 0,0, 0, 0, 0, DEG2RAD(cntx.eval1st(cmd)) );
 		break;
+
+	case PRIM_X_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( -cntx.eval1st(cmd), 0 ,0, 0,0,0 );
+		break;
+	case PRIM_Y_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( 0, -cntx.eval1st(cmd), 0, 0,0,0 );
+		break;
+	case PRIM_Z_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( 0,0, -cntx.eval1st(cmd), 0,0,0 );
+		break;
+	case PRIM_YAW_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( 0,0, 0, -DEG2RAD(cntx.eval1st(cmd)), 0,0 );
+		break;
+	case PRIM_PITCH_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( 0,0, 0, 0, -DEG2RAD(cntx.eval1st(cmd)), 0);
+		break;
+	case PRIM_ROLL_DEC:
+		cntx.cursor+=mrpt::poses::CPose3D( 0,0, 0, 0, 0, -DEG2RAD(cntx.eval1st(cmd)) );
+		break;
+
 	case PRIM_PUSH:
 		cntx.push_context();
 		break;
