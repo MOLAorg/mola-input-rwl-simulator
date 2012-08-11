@@ -99,18 +99,32 @@ int main(int argc, char**argv)
 					end = true;
 					break;
 
+				case 'i':
+				case 'I':
+					{
+						mrpt::opengl::CRenderizablePtr obj = gl_world->getByName("node_labels");
+						if (obj)
+						{
+							obj->setVisibility( !obj->isVisible() );
+							win3D.repaint();
+						}
+						break;
+					}
+
 				case 'l':
 				case 'L':
-					mrpt::opengl::CRenderizablePtr obj = gl_world->getByName("node_labels");
-					if (obj)
 					{
-						obj->setVisibility( !obj->isVisible() );
-						win3D.repaint();
+						mrpt::opengl::CRenderizablePtr obj = gl_world->getByName("landmarks");
+						if (obj)
+						{
+							obj->setVisibility( !obj->isVisible() );
+							win3D.repaint();
+						}
+						break;
 					}
-					break;
 				};
-				mrpt::system::sleep(10);
 			}
+			mrpt::system::sleep(10);
 		}
 
 		return 0;
