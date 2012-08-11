@@ -114,7 +114,7 @@ bool rwt::compile_rwt_program(const std::string &file, RWT_Program &out_program)
 			line = trim(line);
 
 			vector<string> toks;
-			tokenize(line," ,\t",toks);
+			tokenize(line," ,\t\r\n",toks);
 			if (toks.empty()) continue;
 
 			if (strCmpI("LIST",toks[0]))

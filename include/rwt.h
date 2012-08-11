@@ -142,9 +142,9 @@ namespace rwt
 
 	struct RWT_SensorOptions
 	{
-		RWT_SensorOptions(mrpt::utils::CConfigFileBase &_cfg_file) 
+		RWT_SensorOptions(mrpt::utils::CConfigFileBase &_cfg_file)
 			: cfg_file(_cfg_file)
-		{ 
+		{
 		}
 
 		mrpt::utils::CConfigFileBase &cfg_file; //!< Source of extra parameters for loading upon construction
@@ -199,7 +199,9 @@ namespace rwt
 	bool run_rwt_program(const RWT_Program &program, RWT_World & out_world);
 
 	/** Build an OpenGL representation of the world.
-	  * An opengl object named "node_labels" is created with all the node labels, but it's initially invisible. Get it and call setVisibility(true) to show.
+	  * These opengl objects are created with names for allowing the user to manipulate them:
+	  *   - "node_labels": The text labels of all node IDs. It's initially invisible, get it and call setVisibility(true) to show.
+	  *   - "landmarks": All landmarks as a point cloud.
 	  */
 	void world_to_opengl(const RWT_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
 

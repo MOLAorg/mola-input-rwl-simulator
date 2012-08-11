@@ -41,6 +41,7 @@ void rwt::world_to_opengl(
 	gl_LMs->loadFromPointsMap( &the_world.landmarks);
 	gl_LMs->setPointSize(2.0);
 	gl_LMs->setColor_u8(220,220,220);
+	gl_LMs->setName("landmarks");
 
 	mrpt::opengl::CPointCloudPtr gl_Nodes =mrpt::opengl::CPointCloud::Create();
 	gl_Nodes->loadFromPointsMap( &the_world.nodes );

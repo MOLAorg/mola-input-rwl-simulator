@@ -68,7 +68,8 @@ namespace rwt
 
 			// Save output param files:
 			const string sOutCAMCALIB = sensorParams.sOutFilesPrefix + string("_CAMCALIB.txt");
-			m_camera_params.saveToConfigFile("CAMERA", mrpt::utils::CConfigFile(sOutCAMCALIB)); 
+			mrpt::utils::CConfigFile cfg(sOutCAMCALIB);
+			m_camera_params.saveToConfigFile("CAMERA", cfg);
 		}
 
 		virtual void simulate(
