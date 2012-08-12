@@ -85,8 +85,8 @@ Execution of a program:
     * `LM_RANDOM <X_MIN> <X_MAX> <Y_MIN> <Y_MAX> <Z_MIN> <Z_MAX>`: Adds a new landmark with a relative coordinates drawn as a random (uniform) sample over the given volume.
 
   * *Topological map*
-    * `NODE`: Places a node at the current cursor position (orientation is ignored). An edge is added from the previous node to this one. If there was already a NODE at the insertion point (or within 0.1 meters) it is assumed that the intention was to loop closure and the edge is created to the existing node. After all, the current node ID in the execution state machine is set to this last node. 
-    * `NODE <RELX> <RELY> <RELZ>`: Exactly like `NODE` but creates the node at the given relative coordinates with respect to the cursor.
+    * `NODE [NO_ARC]`: Places a node at the current cursor position (orientation is ignored). Unless `NO_ARC` is specified, an edge is added from the previous node to this one. If there was already a NODE at the insertion point (or within 0.1 meters) it is assumed that the intention was to loop closure and the edge is created to the existing node. After all, the current node ID in the execution state machine is set to this last node. 
+    * `NODE <RELX> <RELY> <RELZ> [NO_ARC]`: Exactly like `NODE` but creates the node at the given relative coordinates with respect to the cursor.
 
 
   * *Flow control*
