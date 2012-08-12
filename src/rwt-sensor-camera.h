@@ -37,7 +37,7 @@ namespace rwt
 		mrpt::poses::CPose3D  m_camera_pose_on_robot;
 		mrpt::utils::TCamera  m_camera_params;  //!< Camera description
 		float                 m_camera_pixel_noise_std;
-		unsigned int          m_check_min_features_per_frame; 
+		unsigned int          m_check_min_features_per_frame;
 
 		SensorSimul_Camera(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
 			SensorSimulBase(world,sensorParams),
@@ -62,7 +62,7 @@ namespace rwt
 			} catch(...) {
 				// Ignore error if user didn't set camera params, but issue at least a warning:
 				std::cerr << "WARNING: [sensor] section doesn't contain any camera parameters: Falling back to defaults.\n";
-			} 
+			}
 			m_maxRange = sensorParams.cfg_file.read_double("sensor","maxRange",m_maxRange);
 			m_check_min_features_per_frame = sensorParams.cfg_file.read_uint64_t("sensor","check_min_features_per_frame",m_check_min_features_per_frame);
 
@@ -73,8 +73,8 @@ namespace rwt
 		}
 
 		virtual void simulate(
-			const SimulContext           & sim,
-			const bool                     is_binary,
+			SimulContext                 & sim,
+			const bool                    is_binary,
 			mrpt::slam::CObservationPtr  & out_observation_bin,
 			std::string                  & out_observation_text,
 			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
@@ -136,6 +136,10 @@ namespace rwt
 					mrpt::utils::TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE,
 					1000 /* unique ID */ );
 			}
+
+			// Warning: No LM observed:
+			if (lst_observed_landmarks.size()==0)
+				sim.warning_no_observation_count++;
 
 			// Output:
 			if (is_binary)

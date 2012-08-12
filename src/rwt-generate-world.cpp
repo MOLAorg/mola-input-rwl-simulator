@@ -91,6 +91,7 @@ bool run_rwt_cmd(
 	RWT_run_context & cntx )
 {
 	using mrpt::utils::DEG2RAD;
+	using mrpt::system::strCmpI;
 
 	switch (cmd.primitive)
 	{
@@ -216,12 +217,14 @@ bool run_rwt_cmd(
 		break;
 	case PRIM_NODE:
 		{
-			if (cmd.args.size()!=0 && cmd.args.size()!=3 )
-				throw std::runtime_error("*ERROR* NODE: None or three arguments expected!\n");
+			bool is_no_arc = !cmd.args.empty() && strCmpI(*cmd.args.rbegin(),"NO_ARC");
+
+			if (cmd.args.size()!=(is_no_arc ? 1:0) && cmd.args.size()!=(is_no_arc ? 4:3) )
+				throw std::runtime_error("*ERROR* NODE: None or three arguments expected plus optional 'NO_ARC'!\n");
 
 			// Get relative coords:
 			double lx=0,ly=0,lz=0;
-			if (cmd.args.size()==3)
+			if (cmd.args.size()==3 || cmd.args.size()==4)
 			{
 				lx = rwt::str2num(cmd.args[0]);
 				ly = rwt::str2num(cmd.args[1]);
@@ -259,8 +262,11 @@ bool run_rwt_cmd(
 			}
 
 			// Create arc:
-			RWT_graph_edge edge_val; /* dummy edge value */
-			cntx.out_world.graph.insertEdge( prev_node,cntx.current_node, edge_val );
+			if (!is_no_arc)
+			{
+				RWT_graph_edge edge_val; /* dummy edge value */
+				cntx.out_world.graph.insertEdge( prev_node,cntx.current_node, edge_val );
+			}
 		}
 		break;
 	case PRIM_CALL:
@@ -299,11 +305,11 @@ bool run_rwt_cmd(
 			if (cmd.args.size()==1)
 			{
 				const double fSeed = rwt::str2num(cmd.args[0]);
-				randomGenerator.randomize(static_cast<uint32_t>(fSeed));					
+				randomGenerator.randomize(static_cast<uint32_t>(fSeed));
 			}
 			else
 			{
-				randomGenerator.randomize();					
+				randomGenerator.randomize();
 			}
 		}
 		break;

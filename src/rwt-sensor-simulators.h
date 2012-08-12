@@ -31,7 +31,8 @@ namespace rwt
 		SimulContext() :
 			curPose       ( ),
 			step_count    (0),
-			//next_waypoint (0),
+			warning_no_observation_count   (0),
+			warning_no_interpolation_count (0),
 
 			show_live_3D  (false),
 			win3D()
@@ -39,7 +40,8 @@ namespace rwt
 
 		mrpt::poses::CPose3D curPose;  // The current robot pose in the world.
 		size_t   step_count;
-		//size_t   next_waypoint;  // The waypoint we're right now heading to.
+		size_t   warning_no_observation_count;
+		size_t   warning_no_interpolation_count;
 
 		bool show_live_3D;
 		mrpt::gui::CDisplayWindow3DPtr win3D;
@@ -58,8 +60,8 @@ namespace rwt
 		const RWT_SensorOptions  & m_sensorParams;
 
 		virtual void simulate(
-			const SimulContext           & sim,
-			const bool                     is_binary,
+			SimulContext                 & sim,
+			const bool                    is_binary,
 			mrpt::slam::CObservationPtr  & out_observation_bin,
 			std::string                  & out_observation_text,
 			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
