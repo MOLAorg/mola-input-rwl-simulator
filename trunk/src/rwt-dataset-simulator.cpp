@@ -57,7 +57,7 @@ void rwt::simulate_rwt_dataset(
 	simul_path.setMaxTimeInterpolation( 2.0 );
 
 	const mrpt::system::TTimeStamp t0 =  mrpt::system::now();
-	
+
 	const mrpt::system::TTimeStamp At_between_waypoints =  mrpt::system::secondsToTimestamp(1.0); // 1 second
 
 	double total_path_len = 0;
@@ -100,7 +100,7 @@ void rwt::simulate_rwt_dataset(
 			// Trick: For spline interpolator to work we need to add an extra time steps before the beginning
 			// and after the end:
 			if (i==0) simul_path.insert(t-At_between_waypoints, p);
-			
+
 			simul_path.insert(t, p);
 
 			if (is_last_pt) simul_path.insert(t+At_between_waypoints, p);
@@ -122,7 +122,7 @@ void rwt::simulate_rwt_dataset(
 	const mrpt::system::TTimeStamp t_last = simul_path.rbegin()->first;
 	const mrpt::system::TTimeStamp At_step = (t_last-t0)/nDesiredTimeSteps;
 
-	// Simulation takes places in the domain of "time": 
+	// Simulation takes places in the domain of "time":
 	for (mrpt::system::TTimeStamp t = t0; t<(t_last+1e-4) ; t+=At_step)
 	{
 		// Simulate sensor readings at current location:
@@ -134,7 +134,8 @@ void rwt::simulate_rwt_dataset(
 		simul_path.interpolate(t,sim.curPose,valid_interp);
 
 		if (!valid_interp)  {
-			std::cerr << "Invalid interpolation for t=" << t << std::endl;
+			std::cerr << "Invalid interpolation for t=" << t << "\r";  // repeat error in the same line
+			sim.warning_no_interpolation_count++;
 			continue;
 		}
 
@@ -143,10 +144,40 @@ void rwt::simulate_rwt_dataset(
 
 		// Update 3D view?
 		// ----------------------------
-		if (outputParams.show_live_3D)
+		if (outputParams.show_live_3D && outputParams.win3D->isOpen())
 		{
 			// Lock:
 			mrpt::opengl::COpenGLScenePtr &scene = outputParams.win3D->get3DSceneAndLock();
+
+			if (outputParams.win3D->keyHit())
+			{
+				const int c = outputParams.win3D->getPushedKey();
+				switch (c)
+				{
+				case 27:
+				case 'q':
+				case 'Q':
+					outputParams.show_live_3D = false;
+					break;
+
+				case 'i':
+				case 'I':
+					{
+						mrpt::opengl::CRenderizablePtr obj = mrpt::opengl::CSetOfObjectsPtr(scene->getByName("world"))->getByName("node_labels");
+						if (obj) obj->setVisibility( !obj->isVisible() );
+						break;
+					}
+
+				case 'l':
+				case 'L':
+					{
+						mrpt::opengl::CRenderizablePtr obj = mrpt::opengl::CSetOfObjectsPtr(scene->getByName("world"))->getByName("landmarks");
+						if (obj) obj->setVisibility( !obj->isVisible() );
+						break;
+					}
+				};
+			} // process key hits
+
 
 			if (!gl_robot)
 			{
@@ -161,6 +192,8 @@ void rwt::simulate_rwt_dataset(
 			}
 			// Update robot representation pose:
 			gl_robot->setPose(sim.curPose);
+
+			outputParams.win3D->setCameraPointingToPoint( sim.curPose.x(), sim.curPose.y(), sim.curPose.z() );
 
 			// Unlock:
 			outputParams.win3D->unlockAccess3DScene();
@@ -187,4 +220,10 @@ void rwt::simulate_rwt_dataset(
 
 	} // end for
 
+
+	if (sim.warning_no_observation_count)
+		cerr << "WARNING: Zero observations were detected by the sensor during " << sim.warning_no_observation_count << " frames.\n";
+
+	if (sim.warning_no_interpolation_count)
+		cerr << "WARNING: Couldn't interpolate path for " << sim.warning_no_interpolation_count << " time steps.\n";
 }

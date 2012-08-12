@@ -22,6 +22,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/random.h>
+#include <mrpt/graphs/dijkstra.h>
 
 #include "rwt.h"
 
@@ -30,6 +31,10 @@ using namespace std;
 
 // Aux funcs:
 string completePath(const string &abs_or_relative_path, const string &script_base_filename);
+
+
+double graph_edge_weight(const RWT_adjacency_graph& graph, const mrpt::utils::TNodeID id_from, const mrpt::utils::TNodeID id_to, const RWT_adjacency_graph::edge_t &edge);
+RWT_World *global_the_world; // Aux var used by graph_edge_weight
 
 // ---------------
 //      Main
@@ -67,6 +72,8 @@ int main(int argc, char**argv)
 		// Run the program to build the world ----------------
 		RWT_World the_world;
 
+		global_the_world = &the_world; // used by aux. global functions
+
 		const int random_seed = cfg.read_int("world","random_seed",-1 /* default val */);
 		if (random_seed<0)
 		     mrpt::random::randomGenerator.randomize();
@@ -100,6 +107,7 @@ int main(int argc, char**argv)
 
 			mrpt::opengl::CSetOfObjectsPtr gl_world = mrpt::opengl::CSetOfObjects::Create(); // Create smart pointer to new object
 			rwt::world_to_opengl(the_world, *gl_world);
+			gl_world->setName("world");
 
 			mrpt::opengl::COpenGLScenePtr &scene = win3D->get3DSceneAndLock();
 			scene->insert( gl_world );
@@ -120,10 +128,12 @@ int main(int argc, char**argv)
 		//      program "NODE" primitives:
 		//  source_node_IDs = ID_1 ID_2 ID_3 .... ID_N
 		const string sSourceNodeIDs = cfg.read_string("path","source_node_IDs","");
+		const string sSourceNodePathIDs = cfg.read_string("path","source_node_path_IDs","");
+
 		if (!sSourceNodeIDs.empty())
 		{
 			vector<string> lst;
-			mrpt::system::tokenize(sSourceNodeIDs," \t,",lst);
+			mrpt::system::tokenize(sSourceNodeIDs," \t,\r\n",lst);
 			ASSERTMSG_(!lst.empty(), "[path].source_node_IDs: Expected list of IDs!")
 
 			simulation_waypoints.reserve(lst.size());
@@ -137,6 +147,98 @@ int main(int argc, char**argv)
 				the_world.nodes.getPoint(idx,x,y,z);
 				simulation_waypoints.push_back( mrpt::math::TPoint3D(x,y,z) );
 			}
+		}
+		else if (!sSourceNodePathIDs.empty())
+		{
+			vector<string> lst;
+			mrpt::system::tokenize(sSourceNodePathIDs," \t,\r\n",lst);
+			ASSERTMSG_(!lst.empty(), "[path].source_node_path_IDs: Expected list of IDs!")
+
+			simulation_waypoints.reserve(lst.size());
+
+			// Go thru the list of waypoints given by the user, then complement it
+			//  by finding the topological paths between them:
+			std::vector<size_t> lst_idxs;
+			size_t prev_idx = INVALID_NODEID;
+			for (size_t i=0;i<lst.size();i++)
+			{
+				// "lst[i]" can be:
+				//  - "#"        : A number
+				//  - "RANDOM"   : We pick a random target node
+				//  - "RANDOM*#" : We pick a sequene of ## random target nodes
+				lst_idxs.clear(); // This will hold the sequence/unique IDs
+
+				if (mrpt::system::strCmpI(lst[i],"RANDOM"))
+				{
+					size_t idx;
+					mrpt::random::randomGenerator.drawUniformUnsignedIntRange(idx, /*min/max:*/ 0,the_world.nodes.size()-1);
+					lst_idxs.push_back(idx);
+				}
+				else if (mrpt::system::strStartsI(lst[i],"RANDOM*"))
+				{
+					ASSERTMSG_(lst[i].size()>7,"RANDOM*# expects # of random nodes!")
+
+					const size_t nRndNodes = static_cast<size_t>( rwt::str2num( lst[i].substr(7) ) );
+					for (size_t k=0;k<nRndNodes;k++)
+					{
+						size_t idx;
+						mrpt::random::randomGenerator.drawUniformUnsignedIntRange(idx, /*min/max:*/ 0,the_world.nodes.size()-1);
+						lst_idxs.push_back(idx);
+					}
+				}
+				else
+				{
+					const size_t idx = static_cast<size_t>( rwt::str2num(lst[i]) );
+					ASSERT_BELOW_(idx,the_world.nodes.size())
+
+					lst_idxs.push_back(idx);
+				}
+
+				for (size_t j=0;j<lst_idxs.size();j++)
+				{
+					const size_t idx = lst_idxs[j];
+
+					// ==== Go to node "idx": ====
+					// Directly move to the first node...
+					if (prev_idx==INVALID_NODEID)
+					{
+						float x,y,z;
+						the_world.nodes.getPoint(idx,x,y,z);
+						simulation_waypoints.push_back( mrpt::math::TPoint3D(x,y,z) );
+
+						// Save current node idx for the next iter:
+						prev_idx = idx;
+					}
+					else
+					{
+						// ...and go on with the topological path:
+						// Create a spanning tree with Dijkstra to find out the path between: prev_idx -> idx.
+						const mrpt::graphs::CDijkstra<RWT_adjacency_graph> tree(
+							the_world.graph,
+							prev_idx,
+							&graph_edge_weight
+							);
+
+						// Get path:
+						mrpt::graphs::CDijkstra<RWT_adjacency_graph>::edge_list_t  lst_edges;
+						tree.getShortestPathTo(idx, lst_edges);
+
+						ASSERTMSG_( !lst_edges.empty(), mrpt::format("ERROR: No topological path found between %u <-> %u", static_cast<unsigned int>(prev_idx),static_cast<unsigned int>(idx) ) )
+
+						for (mrpt::graphs::CDijkstra<RWT_adjacency_graph>::edge_list_t::const_iterator it=lst_edges.begin();it!=lst_edges.end();++it)
+						{
+							const mrpt::utils::TPairNodeIDs pair_ids = *it;
+							const mrpt::utils::TNodeID  next_id = pair_ids.first==prev_idx ? pair_ids.second : pair_ids.first;
+
+							float x,y,z;
+							the_world.nodes.getPoint(next_id,x,y,z);
+							simulation_waypoints.push_back( mrpt::math::TPoint3D(x,y,z) );
+
+							prev_idx = next_id;
+						}
+					}
+				} // end for "j" over "lst_idxs"
+			} // end for "i"
 		}
 		else
 		{
@@ -246,3 +348,13 @@ string completePath(const string &abs_or_relative_path, const string &script_bas
 	}
 }
 
+double graph_edge_weight(const RWT_adjacency_graph& graph, const mrpt::utils::TNodeID id_from, const mrpt::utils::TNodeID id_to, const RWT_adjacency_graph::edge_t &edge)
+{
+	using mrpt::utils::square;
+
+	mrpt::math::TPoint3Df p1,p2;
+	global_the_world->nodes.getPoint(id_from,p1.x,p1.y,p1.z);
+	global_the_world->nodes.getPoint(id_to,  p2.x,p2.y,p2.z);
+
+	return square(p1.x-p2.x)+square(p1.y-p2.y)+square(p1.z-p2.z);
+}

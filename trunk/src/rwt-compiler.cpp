@@ -48,12 +48,12 @@ const TStrings2Primitive primitive_strings[primitive_strings_count]  = {
 	{ "PITCH+=", PRIM_PITCH_INC },
 	{ "ROLL+=", PRIM_ROLL_INC },
 
-	{ "X+=", PRIM_X_DEC },
-	{ "Y+=", PRIM_Y_DEC },
-	{ "Z+=", PRIM_Z_DEC },
-	{ "YAW+=", PRIM_YAW_DEC },
-	{ "PITCH+=", PRIM_PITCH_DEC },
-	{ "ROLL+=", PRIM_ROLL_DEC },
+	{ "X-=", PRIM_X_DEC },
+	{ "Y-=", PRIM_Y_DEC },
+	{ "Z-=", PRIM_Z_DEC },
+	{ "YAW-=", PRIM_YAW_DEC },
+	{ "PITCH-=", PRIM_PITCH_DEC },
+	{ "ROLL-=", PRIM_ROLL_DEC },
 
 	{ "PUSH", PRIM_PUSH },
 	{ "POP", PRIM_POP },
