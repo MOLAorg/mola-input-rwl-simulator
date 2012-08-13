@@ -64,6 +64,7 @@ namespace rwt
 				std::cerr << "WARNING: [sensor] section doesn't contain any camera parameters: Falling back to defaults.\n";
 			}
 			m_maxRange = sensorParams.cfg_file.read_double("sensor","maxRange",m_maxRange);
+			m_camera_pixel_noise_std = sensorParams.cfg_file.read_double("sensor","camera_pixel_noise_std",m_camera_pixel_noise_std);
 			m_check_min_features_per_frame = sensorParams.cfg_file.read_uint64_t("sensor","check_min_features_per_frame",m_check_min_features_per_frame);
 
 			// Save output param files:
