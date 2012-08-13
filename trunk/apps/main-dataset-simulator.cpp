@@ -270,30 +270,30 @@ int main(int argc, char**argv)
 		}
 		else
 		{
-			cout << "Preparing result files..."; cout.flush();
+			cout << "Saving map ground truth and preparing result files..."; cout.flush();
 
 			const string sOutSensor = sOutFilesPrefix + string("_SENSOR.txt");
 			outputParams.output_text_sensor.open(sOutSensor.c_str());
 			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
 			outputParams.output_text_sensor <<
-				"# STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
-				"# -------------------------------------------------------------------\n";
+				"%% STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
+				"%% -------------------------------------------------------------------\n";
 
 			const string sOutGT = sOutFilesPrefix + string("_GT_PATH.txt");
 			outputParams.output_text_groundtruth.open(sOutGT.c_str());
 			ASSERTMSG_(outputParams.output_text_groundtruth.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGT.c_str() ) )
 			outputParams.output_text_groundtruth <<
-				"# Ground truth path of the SENSOR (not the robot)                     \n"
-				"# STEP     X       Y        Z        QR        QX      QY      QZ     \n"
-				"# --------------------------------------------------------------------\n";
+				"%% Ground truth path of the SENSOR (not the robot)                     \n"
+				"%% STEP     X       Y        Z        QR        QX      QY      QZ     \n"
+				"%% --------------------------------------------------------------------\n";
 
 			const string sOutGTMap = sOutFilesPrefix + string("_GT_MAP.txt");
 			std::ofstream fOutGTMap(sOutGTMap.c_str());
 			ASSERTMSG_(fOutGTMap.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGTMap.c_str() ) )
 			fOutGTMap <<
-				"# Landmark ground truth global positions (first row is for LM index=0, next is 1 and so on)\n"
-				"#    X             Y              Z        \n"
-				"# -----------------------------------------\n";
+				"%% Landmark ground truth global positions (first row is for LM index=0, next is 1 and so on)\n"
+				"%%    X             Y              Z        \n"
+				"%% -----------------------------------------\n";
 
 			const std::vector<float> & lm_xs = the_world.landmarks.getPointsBufferRef_x();
 			const std::vector<float> & lm_ys = the_world.landmarks.getPointsBufferRef_y();

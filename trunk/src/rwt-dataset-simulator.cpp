@@ -120,7 +120,10 @@ void rwt::simulate_rwt_dataset(
 	// Approx # steps from user params:
 	const size_t nDesiredTimeSteps = 1 + total_path_len/pathParams.max_step_lin;
 	const mrpt::system::TTimeStamp t_last = simul_path.rbegin()->first;
+	const double At_total_tim = mrpt::system::timeDifference(t0,t_last);
 	const mrpt::system::TTimeStamp At_step = (t_last-t0)/nDesiredTimeSteps;
+
+	cout << endl; // start new line for simulation state
 
 	// Simulation takes places in the domain of "time":
 	for (mrpt::system::TTimeStamp t = t0; t<(t_last+1e-4) ; t+=At_step)
@@ -217,6 +220,14 @@ void rwt::simulate_rwt_dataset(
 
 		// Put here so the "continue" in case of not interpol. does not increment it:
 		sim.step_count++;
+
+		if ((sim.step_count % 500)==0)
+		{
+			cout << mrpt::format("Simulation step %7u | Progress: %.03f%%    \r",
+				static_cast<unsigned int>(sim.step_count),
+				100*mrpt::system::timeDifference(t0,t)/At_total_tim );
+			cout.flush();
+		}
 
 	} // end for
 
