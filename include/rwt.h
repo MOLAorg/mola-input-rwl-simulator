@@ -129,6 +129,20 @@ namespace rwt
 		CornerParams  world_origin_corner_params;
 	}; // end of WRL_RenderOptions
 
+
+	/** Used in rwt::save_rwt_as_matlab_script **/
+	struct RWT_SaveMatlabOptions
+	{
+		RWT_SaveMatlabOptions() :
+			nodes_size(7.0),
+			edges_width(1.0)
+		{}
+
+		double nodes_size;  //!< Set to 0 to disable drawing waypoint nodes.
+		double edges_width; //!< Set to 0 to disable edges.
+	}; // end of RWT_SaveMatlabOptions
+
+
 	struct RWT_PathOptions
 	{
 		RWT_PathOptions() :
@@ -214,6 +228,13 @@ namespace rwt
 		const RWT_PathOptions                    & pathParams,
 		const RWT_SensorOptions                  & sensorParams,
 		RWT_OutputOptions                        & outputParams
+		);
+
+	/** Save a MATLAB script with a representation of nodes,edges, etc. **/
+	void save_rwt_as_matlab_script(
+		const RWT_World             & world,
+		std::ostream                & o,
+		const RWT_SaveMatlabOptions & matlabDrawParams
 		);
 
 
