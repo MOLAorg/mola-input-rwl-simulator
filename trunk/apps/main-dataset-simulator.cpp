@@ -276,24 +276,33 @@ int main(int argc, char**argv)
 			outputParams.output_text_sensor.open(sOutSensor.c_str());
 			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
 			outputParams.output_text_sensor <<
-				"%% STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
-				"%% -------------------------------------------------------------------\n";
+				"% STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
+				"% -------------------------------------------------------------------\n";
 
 			const string sOutGT = sOutFilesPrefix + string("_GT_PATH.txt");
 			outputParams.output_text_groundtruth.open(sOutGT.c_str());
 			ASSERTMSG_(outputParams.output_text_groundtruth.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGT.c_str() ) )
 			outputParams.output_text_groundtruth <<
-				"%% Ground truth path of the SENSOR (not the robot)                     \n"
-				"%% STEP     X       Y        Z        QR        QX      QY      QZ     \n"
-				"%% --------------------------------------------------------------------\n";
+				"% Ground truth path of the SENSOR (not the robot)                     \n"
+				"% STEP     X       Y        Z        QR        QX      QY      QZ     \n"
+				"% --------------------------------------------------------------------\n";
 
 			const string sOutGTMap = sOutFilesPrefix + string("_GT_MAP.txt");
 			std::ofstream fOutGTMap(sOutGTMap.c_str());
 			ASSERTMSG_(fOutGTMap.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutGTMap.c_str() ) )
 			fOutGTMap <<
-				"%% Landmark ground truth global positions (first row is for LM index=0, next is 1 and so on)\n"
-				"%%    X             Y              Z        \n"
-				"%% -----------------------------------------\n";
+				"% Landmark ground truth global positions (first row is for LM index=0, next is 1 and so on)\n"
+				"%    X             Y              Z        \n"
+				"% -----------------------------------------\n";
+
+			const string sOutWayPointsMatlab = sOutFilesPrefix + string("_DRAW_WAYPOINTS.m");
+			std::ofstream fOutWayPointsMatlab(sOutWayPointsMatlab.c_str());
+			ASSERTMSG_(fOutWayPointsMatlab.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutWayPointsMatlab.c_str() ) )
+
+			RWT_SaveMatlabOptions matlab_opts;
+			matlab_opts.nodes_size = 4;
+			rwt::save_rwt_as_matlab_script(the_world,fOutWayPointsMatlab, matlab_opts);
+
 
 			const std::vector<float> & lm_xs = the_world.landmarks.getPointsBufferRef_x();
 			const std::vector<float> & lm_ys = the_world.landmarks.getPointsBufferRef_y();

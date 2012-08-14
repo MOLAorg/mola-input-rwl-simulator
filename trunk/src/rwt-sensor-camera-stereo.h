@@ -20,65 +20,34 @@
 
 #pragma once
 
-#include <mrpt/obs.h>
-#include <memory>  // for auto_ptr<>
+#include "rwt-sensor-camera-common.h"
 
 namespace rwt
 {
+	using namespace std;
+	using namespace mrpt::utils;
 
-	struct SimulContext
+	/** Sensor implementation: Camera
+	  */
+	struct SensorSimul_CameraStereo : public SensorSimul_CameraCommon
 	{
-		SimulContext() :
-			curPose       ( ),
-			step_count    (0),
-			warning_no_observation_count   (0),
-			warning_no_interpolation_count (0),
+		SensorSimul_CameraStereo(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
+			SensorSimul_CameraCommon(
+				world,
+				sensorParams,
+				false,  /* Hasn't range */
+				true    /* Is Stereo */
+				)
+		{
+		}
 
-			show_live_3D  (false),
-			win3D()
-		{ }
+		virtual void describeObservation(RWT_OutputOptions & outputParams)
+		{
+			outputParams.output_text_sensor <<
+				"%                           LEFT_PIXEL_X  LEFT_PIXEL_Y  RIGHT_PIXEL_X  RIGHT_PIXEL_Y   \n"
+				"% -------------------------------------------------------------------------------------\n";
+		}
 
-		mrpt::poses::CPose3D curPose;  // The current robot pose in the world.
-		size_t   step_count;
-		size_t   warning_no_observation_count;
-		size_t   warning_no_interpolation_count;
+	}; // end of SensorSimul_Camera
 
-		bool show_live_3D;
-		mrpt::gui::CDisplayWindow3DPtr win3D;
-	};
-
-
-	/** Virtual base class for all sensor simulator */
-	struct SensorSimulBase
-	{
-		SensorSimulBase(const RWT_World & world, const RWT_SensorOptions & sensorParams) :
-			m_world(world),
-			m_sensorParams(sensorParams)
-		{ }
-
-		const RWT_World          & m_world;
-		const RWT_SensorOptions  & m_sensorParams;
-
-		virtual void simulate(
-			SimulContext                 & sim,
-			const bool                    is_binary,
-			mrpt::slam::CObservationPtr  & out_observation_bin,
-			std::string                  & out_observation_text,
-			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
-			) = 0;
-
-		virtual void describeObservation(RWT_OutputOptions & outputParams) = 0;
-
-	}; // end of SensorSimulBase
-
-	typedef std::auto_ptr<SensorSimulBase>  SensorSimulBasePtr;
-
-} // end namespace
-
-// -----------------------------------------
-//     Include all sensors:
-// -----------------------------------------
-#include "rwt-sensor-camera.h"
-#include "rwt-sensor-camera-range.h"
-#include "rwt-sensor-camera-stereo.h"
-
+}

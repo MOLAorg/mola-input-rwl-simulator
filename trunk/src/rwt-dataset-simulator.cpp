@@ -111,9 +111,22 @@ void rwt::simulate_rwt_dataset(
 	}
 
 
-
 	// Create sensor:
-	SensorSimulBasePtr sensor = SensorSimulBasePtr(new SensorSimul_Camera(world,sensorParams) );
+	// --------------------------------------
+	const string sType = sensorParams.cfg_file.read_string("sensor","type","",true);
+	SensorSimulBasePtr sensor;
+
+	if (mrpt::system::strCmpI(sType,"camera"))
+		sensor = SensorSimulBasePtr(new SensorSimul_Camera(world,sensorParams) );
+	else if (mrpt::system::strCmpI(sType,"camera_range"))
+		sensor = SensorSimulBasePtr(new SensorSimul_CameraRange(world,sensorParams) );
+	else if (mrpt::system::strCmpI(sType,"stereo_camera"))
+		sensor = SensorSimulBasePtr(new SensorSimul_CameraStereo(world,sensorParams) );
+	else
+		throw std::runtime_error( mrpt::format("ERROR: Unknown sensor type: %s",sType.c_str() ).c_str() );
+
+	// Write human-readable textual description of data output:
+	sensor->describeObservation(outputParams);
 
 	mrpt::opengl::CRenderizablePtr gl_robot; // Cache this pointer to avoid looking for it with each iteration.
 
