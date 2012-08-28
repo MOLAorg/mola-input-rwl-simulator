@@ -138,6 +138,8 @@ void rwt::simulate_rwt_dataset(
 
 	cout << endl; // start new line for simulation state
 
+	unsigned int nStepForDecimateGUI = 0;
+
 	// Simulation takes places in the domain of "time":
 	for (mrpt::system::TTimeStamp t = t0; t<(t_last+1e-4) ; t+=At_step)
 	{
@@ -163,10 +165,12 @@ void rwt::simulate_rwt_dataset(
 		if (outputParams.show_live_3D && outputParams.win3D->isOpen())
 		{
 			// Lock:
-			mrpt::opengl::COpenGLScenePtr &scene = outputParams.win3D->get3DSceneAndLock();
+			bool do_repaint = false;
 
 			if (outputParams.win3D->keyHit())
 			{
+				mrpt::opengl::COpenGLScenePtr &scene = outputParams.win3D->get3DSceneAndLock();
+
 				const int c = outputParams.win3D->getPushedKey();
 				switch (c)
 				{
@@ -181,6 +185,7 @@ void rwt::simulate_rwt_dataset(
 					{
 						mrpt::opengl::CRenderizablePtr obj = mrpt::opengl::CSetOfObjectsPtr(scene->getByName("world"))->getByName("node_labels");
 						if (obj) obj->setVisibility( !obj->isVisible() );
+						do_repaint=true;
 						break;
 					}
 
@@ -189,33 +194,48 @@ void rwt::simulate_rwt_dataset(
 					{
 						mrpt::opengl::CRenderizablePtr obj = mrpt::opengl::CSetOfObjectsPtr(scene->getByName("world"))->getByName("landmarks");
 						if (obj) obj->setVisibility( !obj->isVisible() );
+						do_repaint=true;
 						break;
 					}
 				};
+
+				// Unlock:
+				outputParams.win3D->unlockAccess3DScene();
 			} // process key hits
 
 
-			if (!gl_robot)
+			if (++nStepForDecimateGUI>=outputParams.show_live_3D_decimate)
 			{
-				gl_robot = scene->getByName("robot");
+				nStepForDecimateGUI=0;
+				do_repaint=true;
+		
+				mrpt::opengl::COpenGLScenePtr &scene = outputParams.win3D->get3DSceneAndLock();
+				
 				if (!gl_robot)
 				{
-					mrpt::opengl::CSetOfObjectsPtr gl_rob = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f,2.0f);
-					gl_rob->setName("robot");
-					scene->insert(gl_rob);
-					gl_robot = gl_rob;
+					gl_robot = scene->getByName("robot");
+					if (!gl_robot)
+					{
+						mrpt::opengl::CSetOfObjectsPtr gl_rob = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f,2.0f);
+						gl_rob->setName("robot");
+						scene->insert(gl_rob);
+						gl_robot = gl_rob;
+					}
 				}
+				// Update robot representation pose:
+				gl_robot->setPose(sim.curPose);
+
+				outputParams.win3D->setCameraPointingToPoint( sim.curPose.x(), sim.curPose.y(), sim.curPose.z() );
+
+				// Unlock:
+				outputParams.win3D->unlockAccess3DScene();
 			}
-			// Update robot representation pose:
-			gl_robot->setPose(sim.curPose);
-
-			outputParams.win3D->setCameraPointingToPoint( sim.curPose.x(), sim.curPose.y(), sim.curPose.z() );
-
-			// Unlock:
-			outputParams.win3D->unlockAccess3DScene();
-
-			outputParams.win3D->repaint();
-			mrpt::system::sleep( outputParams.show_live_3D_sleep_ms );
+			
+			if (do_repaint)
+			{
+				outputParams.win3D->repaint();
+				mrpt::system::sleep( outputParams.show_live_3D_sleep_ms );
+			}
 		}
 
 		// Save observations & groundtruth to files:
