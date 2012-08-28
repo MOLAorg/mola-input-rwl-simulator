@@ -171,6 +171,7 @@ namespace rwt
 		RWT_OutputOptions() :
 			win3D(),
 			show_live_3D(false),
+			show_live_3D_decimate(1),
 			show_live_3D_sleep_ms(10),
 			is_binary   (false)
 		{
@@ -179,6 +180,7 @@ namespace rwt
 		mrpt::gui::CDisplayWindow3DPtr win3D; //!< If not an empty smart pointer, the window to show simulation live.
 
 		bool  show_live_3D; //!< true: Update the robot path, etc. in the 3D view
+		unsigned int show_live_3D_decimate;
 		int   show_live_3D_sleep_ms;
 
 		bool  is_binary; // true: use outfile_bin_rawlog; false: use outfile_text_*
@@ -202,6 +204,15 @@ namespace rwt
 	/** @name RWT API
 	    @{ */
 
+	/** Compile an input RWT file into a program and run it to generate the synthetic world.
+	  *  This function is equivalent to successive calls to \a compile_rwt_program() and 
+	  *  \a run_rwt_program(), plus the possibility of caching the generated world in cache files
+	  *  to avoid running exactly the same program more than once.
+	  *
+	  *  \return false on any error, and dump info to std::cerr
+	  */
+	bool compile_and_run_rwt_program(const std::string &file, RWT_Program &out_program, RWT_World & out_world, bool enable_file_caching = true);
+
 	/** Compile an input RWT file into a program.
 	  *  \return false on any error, and dump info to std::cerr
 	  */
@@ -218,6 +229,17 @@ namespace rwt
 	  *   - "landmarks": All landmarks as a point cloud.
 	  */
 	void world_to_opengl(const RWT_World &world, mrpt::opengl::CSetOfObjects &out_gl, const WRL_RenderOptions &renderOpts = WRL_RenderOptions() );
+
+	/** Load a world from a compiled .crwt.gz file \sa compile_and_run_rwt_program, save_rwt_world 
+	  * If a source file (.rwt) is provided in \a source_file, its HASH will be compared with that within the 
+	  * compiled file to assure that the program hasn't changed since compilation, returning false otherwise.
+	  * \return false on any error  */
+	bool load_rwt_world(RWT_World &world, const std::string &crwt_file, const std::string &source_file = std::string());
+
+	/** Save a world to a compiled .crwt.gz file \sa compile_and_run_rwt_program, load_rwt_world 
+	  * If \a source_file is provided, a HASH will be saved (see \a load_rwt_world() for its utility).
+	  * \return false on any error  */
+	bool save_rwt_world(const RWT_World &world, const std::string &file, const std::string &source_file = std::string());
 
 	/** Simulate an arbitrarily complex robot path (given an input sequence of waypoints),
 	  * a world model and a set of sensor and output parameters.

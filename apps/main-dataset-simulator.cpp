@@ -59,34 +59,25 @@ int main(int argc, char**argv)
 		string sFil = cfg.read_string("world","input","", true /* fail if not found*/ );
 		sFil = completePath(sFil,sCfgFil);
 
-		// Compile ----------------------------
-		cout << "[1>] Compiling '"<< sFil << "'...\n"; cout.flush();
-		RWT_Program program;
-		if (!compile_rwt_program(sFil,program))
-		{
-			cerr << "*ERROR* Program compilation failed\n";
-			return 1;
-		}
-		cout << "[1<] Compilation succeeded!\n";
-
-		// Run the program to build the world ----------------
-		RWT_World the_world;
-
-		global_the_world = &the_world; // used by aux. global functions
-
+		// Compile & run the "world" model ----------------------------
 		const int random_seed = cfg.read_int("world","random_seed",-1 /* default val */);
 		if (random_seed<0)
 		     mrpt::random::randomGenerator.randomize();
 		else mrpt::random::randomGenerator.randomize(random_seed);
 
 
-		cout << "[2>] Building world...\n"; cout.flush();
-		if (!run_rwt_program(program,the_world))
+		cout << "[1>] Compiling and running '"<< sFil << "'...\n"; cout.flush();
+		RWT_Program program;
+		RWT_World the_world;
+		global_the_world = &the_world; // used by aux. global functions
+
+		if (!rwt::compile_and_run_rwt_program(sFil,program, the_world))
 		{
-			cerr << "*ERROR* Program compilation failed\n";
+			cerr << "*ERROR* Program compilation/run failed\n";
 			return 1;
 		}
-		cout << "[2<] World contruction succeeded!\n";
+		cout << "[1<] World generated or loaded succeeded!\n";
+
 		// Stats:
 		if (1)
 		{
@@ -261,7 +252,8 @@ int main(int argc, char**argv)
 		RWT_OutputOptions   outputParams;
 		outputParams.win3D = win3D;
 		outputParams.show_live_3D = win3D.present();
-		outputParams.show_live_3D_sleep_ms = cfg.read_int("path","show_live_3D_sleep_ms", 10);
+		outputParams.show_live_3D_decimate = cfg.read_int("path","show_live_3D_decimate", outputParams.show_live_3D_decimate);
+		outputParams.show_live_3D_sleep_ms = cfg.read_int("path","show_live_3D_sleep_ms", outputParams.show_live_3D_sleep_ms);
 
 
 		if (outputParams.is_binary)
