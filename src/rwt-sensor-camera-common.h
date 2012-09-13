@@ -109,7 +109,7 @@ namespace rwt
 			vector<pair<size_t,float> > nearby_LMs;
 			this->m_world.landmarks.kdTreeRadiusSearch3D(
 				cam_pose.x(), cam_pose.y(), cam_pose.z(),
-				m_maxRange+0.1,
+				mrpt::utils::square(m_maxRange+0.1),
 				nearby_LMs);
 
 			// Convert to pixel coordinates, and leave only those that fall within the camera image limits:
