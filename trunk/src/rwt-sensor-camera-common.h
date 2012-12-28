@@ -42,8 +42,8 @@ namespace rwt
 	{
 		float                 m_minRange,m_maxRange;       //!< In meters
 		mrpt::poses::CPose3D  m_camera_pose_on_robot;
-		mrpt::poses::CPose3D  m_l2r_camera_pose;  //!< Only for stereo cameras
-		mrpt::utils::TCamera  m_camera_params;  //!< Camera description
+		mrpt::utils::TCamera  m_camera_params;  //!< Camera description (monocular)
+		mrpt::utils::TStereoCamera m_stereo_camera_params; //!< Camera description (stereo)
 		float                 m_camera_pixel_noise_std;
 		unsigned int          m_check_min_features_per_frame;
 
@@ -59,28 +59,54 @@ namespace rwt
 				SensorSimulBase(world,sensorParams),
 				m_minRange(0), m_maxRange(20),
 				m_camera_pose_on_robot(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90)),
-				m_l2r_camera_pose(0.20,0,0,0,0,0),
+				//m_l2r_camera_pose(0.20,0,0,0,0,0),
 				m_camera_pixel_noise_std(0),
 				m_check_min_features_per_frame(0),
 				m_has_range(has_range),
 				m_is_stereo(is_stereo)
 		{
 			// Default camera params:
-			m_camera_params.ncols = 640;
-			m_camera_params.nrows = 480;
+			if (!m_is_stereo)
+			{
+				m_camera_params.ncols = 640;
+				m_camera_params.nrows = 480;
 
-			m_camera_params.cx(m_camera_params.ncols>>1);
-			m_camera_params.cy(m_camera_params.nrows>>1);
+				m_camera_params.cx(m_camera_params.ncols>>1);
+				m_camera_params.cy(m_camera_params.nrows>>1);
 
-			m_camera_params.fx(m_camera_params.ncols>>2);
-			m_camera_params.fy(m_camera_params.ncols>>2);
+				m_camera_params.fx(m_camera_params.ncols>>2);
+				m_camera_params.fy(m_camera_params.ncols>>2);
 
-			// Try loading custom params from cfg file, if set by the user:
-			try {
-				m_camera_params.loadFromConfigFile("sensor",sensorParams.cfg_file);
-			} catch(...) {
-				// Ignore error if user didn't set camera params, but issue at least a warning:
-				std::cerr << "WARNING: [sensor] section doesn't contain any camera parameters: Falling back to defaults.\n";
+				// Try loading custom params from cfg file, if set by the user:
+				try {
+					m_camera_params.loadFromConfigFile("sensor",sensorParams.cfg_file);
+				} catch(...) {
+					// Ignore error if user didn't set camera params, but issue at least a warning:
+					std::cerr << "WARNING: [sensor] section doesn't contain camera parameters: Falling back to defaults.\n";
+				}
+			}
+			else
+			{
+				m_stereo_camera_params.leftCamera.ncols = 640;
+				m_stereo_camera_params.leftCamera.nrows = 480;
+
+				m_stereo_camera_params.leftCamera.cx(m_stereo_camera_params.leftCamera.ncols>>1);
+				m_stereo_camera_params.leftCamera.cy(m_stereo_camera_params.leftCamera.nrows>>1);
+
+				m_stereo_camera_params.leftCamera.fx(m_stereo_camera_params.leftCamera.ncols>>2);
+				m_stereo_camera_params.leftCamera.fy(m_stereo_camera_params.leftCamera.ncols>>2);
+
+				m_stereo_camera_params.rightCamera = m_stereo_camera_params.leftCamera;
+
+				m_stereo_camera_params.rightCameraPose = mrpt::poses::CPose3DQuat( mrpt::poses::CPose3D(0.20,0,0,0,0,0) );
+
+				// Try loading custom params from cfg file, if set by the user:
+				try {
+					m_stereo_camera_params.loadFromConfigFile("sensor",sensorParams.cfg_file);
+				} catch(...) {
+					// Ignore error if user didn't set camera params, but issue at least a warning:
+					std::cerr << "WARNING: [sensor] section doesn't contain camera parameters: Falling back to defaults.\n";
+				}
 			}
 			m_minRange = sensorParams.cfg_file.read_double("sensor","minRange",m_minRange);
 			m_maxRange = sensorParams.cfg_file.read_double("sensor","maxRange",m_maxRange);
@@ -90,7 +116,10 @@ namespace rwt
 			// Save output param files:
 			const string sOutCAMCALIB = sensorParams.sOutFilesPrefix + string("_CAMCALIB.txt");
 			mrpt::utils::CConfigFile cfg(sOutCAMCALIB);
-			m_camera_params.saveToConfigFile("CAMERA", cfg);
+			if (m_is_stereo)
+				m_stereo_camera_params.saveToConfigFile("CAMERA", cfg);
+			else
+				m_camera_params.saveToConfigFile("CAMERA", cfg);
 		}
 
 		virtual void simulate(
@@ -101,9 +130,12 @@ namespace rwt
 			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
 			)
 		{
-			const mrpt::poses::CPose3D cam_pose = sim.curPose + m_camera_pose_on_robot;
+			mrpt::poses::CPose3D cam_pose(mrpt::poses::UNINITIALIZED_POSE);
+			cam_pose.composeFrom(sim.curPose, m_camera_pose_on_robot);
+
 			out_GT_sensor_pose = mrpt::poses::CPose3DQuat(cam_pose);
-			const mrpt::poses::CPose3D cam_pose_right = cam_pose + m_l2r_camera_pose;  // for stereo cams.
+			mrpt::poses::CPose3D cam_pose_right(mrpt::poses::UNINITIALIZED_POSE);   // for stereo cams.
+			cam_pose_right.composeFrom(cam_pose, mrpt::poses::CPose3D(m_stereo_camera_params.rightCameraPose));
 
 			// Get the list of closest LMs using the KD-tree:
 			vector<pair<size_t,float> > nearby_LMs;
@@ -142,27 +174,33 @@ namespace rwt
 					px.x += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
 					px.y += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
 
-					if (px.x>0 && px.x<m_camera_params.ncols &&
-					    px.y>0 && px.y<m_camera_params.nrows )
+					const bool left_cam_in_range = m_is_stereo ? 
+						(px.x>0 && px.x<m_stereo_camera_params.leftCamera.ncols && px.y>0 && px.y<m_stereo_camera_params.leftCamera.nrows ) :
+						(px.x>0 && px.x<m_camera_params.ncols && px.y>0 && px.y<m_camera_params.nrows );
+
+					// Stereo camera?
+					TPixelCoordf px_right_cam;
+					bool right_cam_in_range = true;
+					if (m_is_stereo)
 					{
-						// Stereo camera:
-						TPixelCoordf px_right_cam;
-						if (m_is_stereo)
-						{
-							double r_lx,r_ly,r_lz;
-							cam_pose_right.inverseComposePoint(gx,gy,gz, r_lx,r_ly,r_lz);
+						double r_lx,r_ly,r_lz;
+						cam_pose_right.inverseComposePoint(gx,gy,gz, r_lx,r_ly,r_lz);
 
-							mrpt::vision::pinhole::projectPoint_with_distortion(
-								mrpt::math::TPoint3D(r_lx,r_ly,r_lz),
-								m_camera_params, px_right_cam,
-								true /* no need to filter points behind our back; done already */
-								);
+						mrpt::vision::pinhole::projectPoint_with_distortion(
+							mrpt::math::TPoint3D(r_lx,r_ly,r_lz),
+							m_camera_params, px_right_cam,
+							true /* no need to filter points behind our back; done already */
+							);
 
-							// Add noise:
-							px_right_cam.x += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
-							px_right_cam.y += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
-						}
+						// Add noise:
+						px_right_cam.x += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
+						px_right_cam.y += mrpt::random::randomGenerator.drawGaussian1D(0,m_camera_pixel_noise_std);
 
+						right_cam_in_range = (px_right_cam.x>0 && px_right_cam.x<m_stereo_camera_params.rightCamera.ncols && px_right_cam.y>0 && px_right_cam.y<m_stereo_camera_params.rightCamera.nrows );
+					}
+
+					if (left_cam_in_range && right_cam_in_range)
+					{
 						TCameraSensorObsData obs;
 						obs.px = px;
 						obs.px_right_cam = px_right_cam;
