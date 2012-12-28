@@ -118,7 +118,7 @@ namespace rwt
 
 			for (size_t i=0;i<nearby_LMs.size();i++)
 			{
-				const int idxLM = nearby_LMs[i].first;
+				const size_t idxLM = nearby_LMs[i].first;
 				float gx,gy,gz;
 				this->m_world.landmarks.getPoint(idxLM, gx,gy,gz);
 
@@ -167,7 +167,7 @@ namespace rwt
 						obs.px = px;
 						obs.px_right_cam = px_right_cam;
 						obs.range = dist;
-						lst_observed_landmarks.push_back( std::make_pair<size_t,TCameraSensorObsData>(idxLM,obs) );
+						lst_observed_landmarks.push_back( std::pair<size_t,TCameraSensorObsData>(idxLM,obs) );
 					}
 				}
 			}
