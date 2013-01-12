@@ -122,6 +122,10 @@ void rwt::simulate_rwt_dataset(
 		sensor = SensorSimulBasePtr(new SensorSimul_CameraRange(world,sensorParams) );
 	else if (mrpt::system::strCmpI(sType,"stereo_camera"))
 		sensor = SensorSimulBasePtr(new SensorSimul_CameraStereo(world,sensorParams) );
+	else if (mrpt::system::strCmpI(sType,"cartesian_sensor"))
+		sensor = SensorSimulBasePtr(new SensorSimul_Cartesian(world,sensorParams) );
+	else if (mrpt::system::strCmpI(sType,"range_bearing"))
+		sensor = SensorSimulBasePtr(new SensorSimul_RangeBearing(world,sensorParams) );
 	else
 		throw std::runtime_error( mrpt::format("ERROR: Unknown sensor type: %s",sType.c_str() ).c_str() );
 
