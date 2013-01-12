@@ -248,6 +248,8 @@ int main(int argc, char**argv)
 
 		RWT_SensorOptions   sensorParams(cfg);
 		sensorParams.sOutFilesPrefix=sOutFilesPrefix;
+		sensorParams.observations_as_c_structs = sensorParams.cfg_file.read_bool("dataset-format","observations_as_c_structs", false);
+		
 
 		RWT_OutputOptions   outputParams;
 		outputParams.win3D = win3D;

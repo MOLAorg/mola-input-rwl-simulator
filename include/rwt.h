@@ -157,12 +157,13 @@ namespace rwt
 	struct RWT_SensorOptions
 	{
 		RWT_SensorOptions(mrpt::utils::CConfigFileBase &_cfg_file)
-			: cfg_file(_cfg_file)
+			: cfg_file(_cfg_file), observations_as_c_structs(false)
 		{
 		}
 
 		mrpt::utils::CConfigFileBase &cfg_file; //!< Source of extra parameters for loading upon construction
 		std::string  sOutFilesPrefix; //!< For dumping extra sets of parameters used in simulation, for future reference.
+		bool observations_as_c_structs;
 
 	}; // end of RWT_SensorOptions
 

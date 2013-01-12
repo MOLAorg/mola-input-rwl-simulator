@@ -161,8 +161,19 @@ void rwt::simulate_rwt_dataset(
 			continue;
 		}
 
+
+		if (sensorParams.observations_as_c_structs)
+			outputParams.output_text_sensor << "my_observation_struct_t  observations_" << sim.step_count << "[] = {" << endl;
+
 		mrpt::poses::CPose3DQuat sensor_GT_Pose;
+		// -------------------------------------------
+		// Here happens the real sensor simulation:
 		sensor->simulate(sim, isBinary, new_obs_bin, new_obs_txt, sensor_GT_Pose);
+		// -------------------------------------------
+
+		if (sensorParams.observations_as_c_structs)
+			new_obs_txt += string(" };\n");
+
 
 		// Update 3D view?
 		// ----------------------------

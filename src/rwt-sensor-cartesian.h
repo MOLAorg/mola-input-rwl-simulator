@@ -142,13 +142,21 @@ namespace rwt
 
 				for (size_t i=0;i<lst_observed_landmarks.size();i++)
 				{
-					out_observation_text+= mrpt::format("%6u %6u %10.3f %10.3f %10.3f\n",
-						static_cast<unsigned int>(sim.step_count),
-						static_cast<unsigned int>(lst_observed_landmarks[i].first),
-						lst_observed_landmarks[i].second.pt.x,
-						lst_observed_landmarks[i].second.pt.y,
-						lst_observed_landmarks[i].second.pt.z
-						);
+					if (!m_sensorParams.observations_as_c_structs)
+						out_observation_text+= mrpt::format("%6u %6u %10.3f %10.3f %10.3f\n",
+							static_cast<unsigned int>(sim.step_count),
+							static_cast<unsigned int>(lst_observed_landmarks[i].first),
+							lst_observed_landmarks[i].second.pt.x,
+							lst_observed_landmarks[i].second.pt.y,
+							lst_observed_landmarks[i].second.pt.z
+							);
+					else
+						out_observation_text+= mrpt::format(" {%6u,%10.3f,%10.3f,%10.3f},\n",
+							static_cast<unsigned int>(lst_observed_landmarks[i].first),
+							lst_observed_landmarks[i].second.pt.x,
+							lst_observed_landmarks[i].second.pt.y,
+							lst_observed_landmarks[i].second.pt.z
+							);
 				}
 			}
 		}
