@@ -120,4 +120,23 @@ check_min_features_per_frame = 0    // Raises an error if there are less than th
 
 //sensor_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(0,0,0)
 
+== Range-bearing sensor ==
+
+A generic sensor which provides the distance, yaw and pitch angles to  detected landmarks.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = range_bearing
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+fov_h                        = 180  // Horizontal Field of View (deg)
+fov_v                        = 140  // Vertical Field of View (deg)
+range_noise_std              = 0    // One sigma of Gaussian noise (meters)
+yaw_noise_std                = 0    // One sigma of Gaussian noise (deg)
+pitch_noise_std              = 0    // One sigma of Gaussian noise (deg)
+check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
+
+//sensor_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(0,0,0)
 }}}
