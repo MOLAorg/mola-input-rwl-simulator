@@ -1,6 +1,8 @@
 #summary Language specification
 #labels Featured
 
+<wiki:toc max_depth="2" />
+
 = 1. Scope =
 
 The goal of a program written in the Recursive World Language (RWL) is to declare a virtual world, which comprises: 
