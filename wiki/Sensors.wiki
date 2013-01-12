@@ -8,7 +8,7 @@ This page lists all the sensors implemented in RWT, among example snips for the 
 
 = Sensors =
 
-== Monocular camera ==
+== 1. Monocular camera ==
 
 One single camera sensor, using a pinhole projection model with optional noise and distortion.
 
@@ -35,7 +35,7 @@ fy         = 100
 dist       = [0 0 0 0 0] // [K1 K2 T1 T2 K3]
 }}}
 
-== Stereo camera ==
+== 2. Stereo camera ==
 
 Two cameras, using a pinhole projection model with optional noise and distortion.
 
@@ -74,7 +74,7 @@ pose_quaternion = [0.20 0 0  1 0 0 0]   // x y z qr qx qy qz
 }}}
 
 
-== RGB+D camera ==
+== 3. RGB+D camera ==
 
 One camera sensor which also provides the distance to all detected landmarks, using a pinhole projection model with optional noise and distortion.
 
@@ -102,7 +102,7 @@ dist       = [0 0 0 0 0] // [K1 K2 T1 T2 K3]
 }}}
 
 
-== "Cartesian" sensor ==
+== 4. "Cartesian" sensor ==
 
 A generic sensor which provides the XYZ coordinates of detected landmarks, in relative coordinates to the sensor.
 
@@ -119,8 +119,10 @@ xyz_noise_std                = 0    // One sigma of Gaussian noise (meters)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
 //sensor_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(0,0,0)
+}}}
 
-== Range-bearing sensor ==
+
+== 5. Range-bearing sensor ==
 
 A generic sensor which provides the distance, yaw and pitch angles to  detected landmarks.
 
