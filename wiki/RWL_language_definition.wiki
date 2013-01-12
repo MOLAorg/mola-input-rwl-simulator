@@ -1,4 +1,5 @@
 #summary Language specification
+#labels Featured
 
 = 1. Scope =
 
