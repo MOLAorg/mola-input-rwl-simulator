@@ -1,0 +1,99 @@
+#summary Sensor types and parameters
+#labels Featured
+
+= Introduction =
+
+This page lists all the sensors implemented in RWT, among example snips for the configuration files required by the program `rwt-dataset-simulator`.
+
+
+= Sensors =
+
+== Monocular camera ==
+
+One single camera sensor, using a pinhole projection model with optional noise and distortion.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = camera
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
+check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
+
+//check_min_features_per_frame  (TO DO)
+
+// Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
+// Camera parameters: 
+resolution = [800 600]
+cx         = 400
+cy         = 300
+fx         = 100
+fy         = 100
+dist       = [0 0 0 0 0] // [K1 K2 T1 T2 K3]
+}}}
+
+== Stereo camera ==
+
+Two cameras, using a pinhole projection model with optional noise and distortion.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = stereo_camera
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
+check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
+
+//check_min_features_per_frame  (TO DO)
+
+// Stereo Camera parameters: (in format expected by mrpt::utils::TStereoCamera, see doxygen docs)
+[sensor_LEFT]
+resolution = [1024 768]
+cx         = 512
+cy         = 384
+fx         = 200
+fy         = 150
+dist       = [0 0 0 0 0] // K1 K2 T1 T2 K3
+
+[sensor_RIGHT]
+resolution = [1024 768]
+cx         = 512
+cy         = 384
+fx         = 200
+fy         = 150
+dist       = [0 0 0 0 0] // K1 K2 T1 T2 K3
+
+[sensor_LEFT2RIGHT_POSE]
+pose_quaternion = [0.20 0 0  1 0 0 0]   // x y z qr qx qy qz
+}}}
+
+
+== RGB+D camera ==
+
+One camera sensor which also provides the distance to all detected landmarks, using a pinhole projection model with optional noise and distortion.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = camera_range
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
+check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
+
+//check_min_features_per_frame  (TO DO)
+
+// Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
+// Camera parameters: 
+resolution = [800 600]
+cx         = 400
+cy         = 300
+fx         = 100
+fy         = 100
+dist       = [0 0 0 0 0] // [K1 K2 T1 T2 K3]
+}}}
