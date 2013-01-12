@@ -22,7 +22,7 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//check_min_features_per_frame  (TO DO)
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
 
 // Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
 // Camera parameters: 
@@ -48,7 +48,7 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//check_min_features_per_frame  (TO DO)
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
 
 // Stereo Camera parameters: (in format expected by mrpt::utils::TStereoCamera, see doxygen docs)
 [sensor_LEFT]
@@ -86,7 +86,7 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//check_min_features_per_frame  (TO DO)
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
 
 // Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
 // Camera parameters: 
@@ -96,4 +96,25 @@ cy         = 300
 fx         = 100
 fy         = 100
 dist       = [0 0 0 0 0] // [K1 K2 T1 T2 K3]
+}}}
+
+
+== "Cartesian" sensor ==
+
+A generic sensor which provides the XYZ coordinates of detected landmarks, in relative coordinates to the sensor.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = cartesian_sensor
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+fov_h                        = 180  // Horizontal Field of View (deg)
+fov_v                        = 140  // Vertical Field of View (deg)
+xyz_noise_std                = 0    // One sigma of Gaussian noise (meters)
+check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
+
+//sensor_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(0,0,0)
+
 }}}
