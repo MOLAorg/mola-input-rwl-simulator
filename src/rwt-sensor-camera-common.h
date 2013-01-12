@@ -48,7 +48,7 @@ namespace rwt
 		unsigned int          m_check_min_features_per_frame;
 
 		bool                  m_has_range; //!< Mark this camera as having range observations
-		bool                  m_is_stereo; //!< Mark this camera as having another "right" camera at \a m_l2r_camera_pose
+		bool                  m_is_stereo; //!< Mark this camera as having another "right" camera at \a m_stereo_camera_params.rightCameraPose
 
 		SensorSimul_CameraCommon(
 			const RWT_World & world,
@@ -59,7 +59,6 @@ namespace rwt
 				SensorSimulBase(world,sensorParams),
 				m_minRange(0), m_maxRange(20),
 				m_camera_pose_on_robot(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90)),
-				//m_l2r_camera_pose(0.20,0,0,0,0,0),
 				m_camera_pixel_noise_std(0),
 				m_check_min_features_per_frame(0),
 				m_has_range(has_range),

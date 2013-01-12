@@ -81,4 +81,5 @@ namespace rwt
 #include "rwt-sensor-camera.h"
 #include "rwt-sensor-camera-range.h"
 #include "rwt-sensor-camera-stereo.h"
-
+#include "rwt-sensor-cartesian.h"
+#include "rwt-sensor-range-bearing.h"
