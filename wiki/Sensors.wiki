@@ -1,6 +1,8 @@
 #summary Sensor types and parameters
 #labels Featured
 
+<wiki:toc max_depth="2" />
+
 = Introduction =
 
 This page lists all the sensors implemented in RWT, among example snips for the configuration files required by the program `rwt-dataset-simulator`.
