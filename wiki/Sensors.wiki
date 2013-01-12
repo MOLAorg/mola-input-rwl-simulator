@@ -22,7 +22,8 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), 
+// so +Z of the camera points to +X of the robot.
 
 // Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
 // Camera parameters: 
@@ -48,7 +49,8 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), 
+// so +Z of the camera points to +X of the robot.
 
 // Stereo Camera parameters: (in format expected by mrpt::utils::TStereoCamera, see doxygen docs)
 [sensor_LEFT]
@@ -86,7 +88,8 @@ maxRange                     = 7.0  // meters
 camera_pixel_noise_std       = 0    // One sigma of Gaussian noise (pixels)
 check_min_features_per_frame = 0    // Raises an error if there are less than these feats in one frame.
 
-//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), so +Z of the camera points to +X of the robot.
+//camera_pose_on_robot  (TO DO): Now it's fixed to (yaw,pitch,roll)=(-90deg,0,-90deg), 
+// so +Z of the camera points to +X of the robot.
 
 // Camera parameters: (in format expected by mrpt::utils::TCamera, see doxygen docs)
 // Camera parameters: 
