@@ -153,7 +153,7 @@ namespace rwt
 							lst_observed_landmarks[i].second.pitch
 							);
 					else
-						out_observation_text+= mrpt::format(" {%6u,%10.3f,%10.3f,%10.3f}\n",
+						out_observation_text+= mrpt::format(" {%6u,%10.3f,%10.3f,%10.3f},\n",
 							static_cast<unsigned int>(lst_observed_landmarks[i].first),
 							lst_observed_landmarks[i].second.range,
 							lst_observed_landmarks[i].second.yaw,
