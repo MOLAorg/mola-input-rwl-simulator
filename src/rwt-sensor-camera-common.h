@@ -240,7 +240,7 @@ namespace rwt
 					if (m_has_range)
 					{
 						if (!m_sensorParams.observations_as_c_structs)
-							out_observation_text+= mrpt::format("%6u %6u %10.3f %10.3f %7.4f\n",
+							out_observation_text+= mrpt::format("%6u %6u %13.8f %13.8f %7.4f\n",
 								static_cast<unsigned int>(sim.step_count),
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
@@ -248,7 +248,7 @@ namespace rwt
 								lst_observed_landmarks[i].second.range
 								);
 						else
-							out_observation_text+= mrpt::format(" {%6u, %10.3f, %10.3f, %7.4f}\n",
+							out_observation_text+= mrpt::format(" {%6u, %13.8f, %13.8f, %7.4f}\n",
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
 								lst_observed_landmarks[i].second.px.y,
@@ -258,7 +258,7 @@ namespace rwt
 					else if (m_is_stereo)
 					{
 						if (!m_sensorParams.observations_as_c_structs)
-							out_observation_text+= mrpt::format("%6u %6u %10.3f %10.3f %10.3f %10.3f\n",
+							out_observation_text+= mrpt::format("%6u %6u %13.8f %13.8f %13.8f %13.8f\n",
 								static_cast<unsigned int>(sim.step_count),
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
@@ -267,7 +267,7 @@ namespace rwt
 								lst_observed_landmarks[i].second.px_right_cam.y
 								);
 						else
-							out_observation_text+= mrpt::format(" {%6u, %10.3f, %10.3f, %10.3f, %10.3f},\n",
+							out_observation_text+= mrpt::format(" {%6u, %13.8f, %13.8f, %13.8f, %13.8f},\n",
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
 								lst_observed_landmarks[i].second.px.y,
@@ -278,14 +278,14 @@ namespace rwt
 					else
 					{
 						if (!m_sensorParams.observations_as_c_structs)
-							out_observation_text+= mrpt::format("%6u %6u %10.3f %10.3f\n",
+							out_observation_text+= mrpt::format("%6u %6u %13.8f %13.8f\n",
 								static_cast<unsigned int>(sim.step_count),
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
 								lst_observed_landmarks[i].second.px.y
 								);
 						else
-							out_observation_text+= mrpt::format(" {%6u,%10.3f,%10.3f},\n",
+							out_observation_text+= mrpt::format(" {%6u,%13.8f,%13.8f},\n",
 								static_cast<unsigned int>(lst_observed_landmarks[i].first),
 								lst_observed_landmarks[i].second.px.x,
 								lst_observed_landmarks[i].second.px.y
