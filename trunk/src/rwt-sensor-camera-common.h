@@ -165,7 +165,8 @@ namespace rwt
 					TPixelCoordf px;
 					mrpt::vision::pinhole::projectPoint_with_distortion(
 						mrpt::math::TPoint3D(lx,ly,lz),
-						m_camera_params, px,
+						m_is_stereo ? m_stereo_camera_params.leftCamera : m_camera_params, 
+						px,
 						true /* no need to filter points behind our back; done already */
 						);
 
@@ -175,7 +176,7 @@ namespace rwt
 
 					const bool left_cam_in_range = m_is_stereo ? 
 						(px.x>0 && px.x<m_stereo_camera_params.leftCamera.ncols && px.y>0 && px.y<m_stereo_camera_params.leftCamera.nrows ) :
-						(px.x>0 && px.x<m_camera_params.ncols && px.y>0 && px.y<m_camera_params.nrows );
+					    (px.x>0 && px.x<m_stereo_camera_params.leftCamera.ncols && px.y>0 && px.y<m_stereo_camera_params.leftCamera.nrows );
 
 					// Stereo camera?
 					TPixelCoordf px_right_cam;
@@ -187,7 +188,8 @@ namespace rwt
 
 						mrpt::vision::pinhole::projectPoint_with_distortion(
 							mrpt::math::TPoint3D(r_lx,r_ly,r_lz),
-							m_camera_params, px_right_cam,
+							m_stereo_camera_params.rightCamera, 
+							px_right_cam,
 							true /* no need to filter points behind our back; done already */
 							);
 
