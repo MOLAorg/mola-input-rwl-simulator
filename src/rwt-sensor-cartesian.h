@@ -63,6 +63,9 @@ namespace rwt
 			
 			m_xyz_noise_std = sensorParams.cfg_file.read_double("sensor","xyz_noise_std",m_xyz_noise_std);
 			m_check_min_features_per_frame = sensorParams.cfg_file.read_uint64_t("sensor","check_min_features_per_frame",m_check_min_features_per_frame);
+
+			m_sensor_pose_on_robot.fromString( sensorParams.cfg_file.read_string("sensor","sensor_pose_on_robot", m_sensor_pose_on_robot.asString() ) );
+			m_sensor_pose_on_robot.getAsVectorVal().transpose().saveToTextFile(sensorParams.sOutFilesPrefix + string("_POSE_ON_ROBOT.txt"), mrpt::math::MATRIX_FORMAT_FIXED, false, std::string("% Pose of the sensor wrt the robot frame of reference: x (m),y (m),z (m), yaw (rad), pitch (rad),roll (rad)\n") );
 		}
 
 		virtual void simulate(
