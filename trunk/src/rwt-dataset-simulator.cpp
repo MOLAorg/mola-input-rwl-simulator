@@ -82,9 +82,20 @@ void rwt::simulate_rwt_dataset(
 				total_path_len+=vec_x_norm;
 				if (vec_x_norm) vec_x*= 1.0/vec_x_norm;
 
-				const mrpt::math::TPoint3D vec_z(0,0,1);
-				mrpt::math::TPoint3D vec_y; // =  vec_z (x) vec_x
-				mrpt::math::crossProduct3D(vec_z,vec_x, vec_y);
+				mrpt::math::TPoint3D vec_y(-vec_x.y,vec_x.x,0); 
+				const double vec_y_norm = vec_y.norm();
+				ASSERT_(vec_y_norm>1e-6) // Otherwise -> TODO!
+				vec_y*= 1.0/vec_y_norm;
+
+				mrpt::math::TPoint3D vec_z;// =  vec_x (x) vec_y
+				mrpt::math::crossProduct3D(vec_x,vec_y, vec_z);
+
+				const double vec_x_norm2 = vec_x.norm();
+				const double vec_y_norm2 = vec_y.norm();
+				const double vec_z_norm2 = vec_z.norm();
+				ASSERT_BELOW_(std::abs(vec_x_norm2-1),1e-6)
+				ASSERT_BELOW_(std::abs(vec_y_norm2-1),1e-6)
+				ASSERT_BELOW_(std::abs(vec_z_norm2-1),1e-6)
 
 				ROT(0,0) = vec_x.x; ROT(0,1) = vec_y.x;  ROT(0,2) = vec_z.x;
 				ROT(1,0) = vec_x.y; ROT(1,1) = vec_y.y;  ROT(1,2) = vec_z.y;

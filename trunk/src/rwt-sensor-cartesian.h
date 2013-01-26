@@ -103,7 +103,7 @@ namespace rwt
 
 				double lx,ly,lz;
 				cam_pose.inverseComposePoint(gx,gy,gz, lx,ly,lz);
-				
+
 				if (dist<m_minRange || dist>m_maxRange || std::abs(yaw)>m_fov_h || std::abs(pitch)>m_fov_v)
 					continue;
 
