@@ -177,6 +177,7 @@ void rwt::simulate_rwt_dataset(
 			outputParams.output_text_sensor << "my_observation_struct_t  observations_" << sim.step_count << "[] = {" << endl;
 
 		mrpt::poses::CPose3DQuat sensor_GT_Pose;
+		const mrpt::poses::CPose3DQuat robot_GT_Pose = mrpt::poses::CPose3DQuat(sim.curPose);
 		// -------------------------------------------
 		// Here happens the real sensor simulation:
 		sensor->simulate(sim, isBinary, new_obs_bin, new_obs_txt, sensor_GT_Pose);
@@ -271,10 +272,12 @@ void rwt::simulate_rwt_dataset(
 		else   outputParams.output_text_sensor << new_obs_txt;
 
 		// GT pose: Save as quaternion since its meaning is clear and unambiguous for everyone:
-		outputParams.output_text_groundtruth << mrpt::format("%6u %f %f %f %f %f %f %f\n",
+		outputParams.output_text_groundtruth << mrpt::format("%6u %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			static_cast<unsigned int>(sim.step_count),
 			sensor_GT_Pose.x(),sensor_GT_Pose.y(),sensor_GT_Pose.z(),
-			sensor_GT_Pose.quat().r(), sensor_GT_Pose.quat().x(), sensor_GT_Pose.quat().y(), sensor_GT_Pose.quat().z() );
+			sensor_GT_Pose.quat().r(), sensor_GT_Pose.quat().x(), sensor_GT_Pose.quat().y(), sensor_GT_Pose.quat().z(), 
+			robot_GT_Pose.x(), robot_GT_Pose.y(), robot_GT_Pose.z(),
+			robot_GT_Pose.quat().r(), robot_GT_Pose.quat().x(), robot_GT_Pose.quat().y(), robot_GT_Pose.quat().z() );
 
 
 		// Put here so the "continue" in case of not interpol. does not increment it:
