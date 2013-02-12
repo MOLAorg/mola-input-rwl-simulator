@@ -114,7 +114,8 @@ namespace rwt
 								delta.yaw(),delta.pitch(),delta.roll(), 
 								q.quat().r(),q.quat().x(),q.quat().y(),q.quat().z() );
 						else
-							outputParams.output_text_sensor << mrpt::format(" {%6u, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f}\n",
+							outputParams.output_text_sensor << mrpt::format(" {%6u, %6u, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f, %15.8f},\n",
+								static_cast<unsigned int>(kf_id),
 								static_cast<unsigned int>(seen_kf_id),
 								delta.x(),delta.y(),delta.z(),
 								delta.yaw(),delta.pitch(),delta.roll(), 
