@@ -147,3 +147,17 @@ check_min_features_per_frame = 0    // Raises an error if there are less than th
 
 sensor_pose_on_robot = [0 0 0 0 0 0]   // (x,y,z,yaw,pitch,roll), angles in degrees
 }}}
+
+== 6. Relative poses (i.e. Graph-SLAM) ==
+
+A "sensor" that measures the relative poses of nearby keyframes.
+
+{{{
+[sensor]
+// Type of sensor to simulate: 
+type = relative_poses
+
+minRange                     = 0    // meters
+maxRange                     = 7.0  // meters
+
+}}}
