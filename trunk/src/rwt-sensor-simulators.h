@@ -69,6 +69,11 @@ namespace rwt
 
 		virtual void describeObservation(RWT_OutputOptions & outputParams) = 0;
 
+		virtual void endSimul(RWT_OutputOptions & outputParams)
+		{
+			// Default: Nothing to do
+		}
+
 	}; // end of SensorSimulBase
 
 	typedef std::auto_ptr<SensorSimulBase>  SensorSimulBasePtr;
@@ -83,3 +88,4 @@ namespace rwt
 #include "rwt-sensor-camera-stereo.h"
 #include "rwt-sensor-cartesian.h"
 #include "rwt-sensor-range-bearing.h"
+#include "rwt-sensor-relative-poses.h"
