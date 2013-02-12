@@ -137,6 +137,8 @@ void rwt::simulate_rwt_dataset(
 		sensor = SensorSimulBasePtr(new SensorSimul_Cartesian(world,sensorParams) );
 	else if (mrpt::system::strCmpI(sType,"range_bearing"))
 		sensor = SensorSimulBasePtr(new SensorSimul_RangeBearing(world,sensorParams) );
+	else if (mrpt::system::strCmpI(sType,"relative_poses"))
+		sensor = SensorSimulBasePtr(new SensorSimul_RelativePoses(world,sensorParams) );	
 	else
 		throw std::runtime_error( mrpt::format("ERROR: Unknown sensor type: %s",sType.c_str() ).c_str() );
 
@@ -291,8 +293,10 @@ void rwt::simulate_rwt_dataset(
 			cout.flush();
 		}
 
-	} // end for
+	} // end for every "t"
 
+	// Give an opportunity for delayed-output:
+	sensor->endSimul(outputParams);
 
 	if (sim.warning_no_observation_count)
 		cerr << "WARNING: Zero observations were detected by the sensor during " << sim.warning_no_observation_count << " frames.\n";
