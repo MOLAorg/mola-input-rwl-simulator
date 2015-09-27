@@ -20,9 +20,10 @@
 
 #include "rwt.h"
 
-#include <mrpt/opengl.h>
-#include <mrpt/utils.h>
-#include <mrpt/system.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/md5.h>
 
 using namespace rwt;
 using namespace std;

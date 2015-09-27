@@ -24,6 +24,8 @@
 #include <mrpt/system/threads.h>  // for sleep()
 #include <mrpt/system/datetime.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace rwt;
 using namespace std;
@@ -106,7 +108,7 @@ void rwt::simulate_rwt_dataset(
 				// Last waypoint: Reuse last rotation matrix
 			}
 
-			const CPose3D p(ROT,cur_pt);
+			const mrpt::poses::CPose3D p(ROT,cur_pt);
 
 			// Trick: For spline interpolator to work we need to add an extra time steps before the beginning
 			// and after the end:
@@ -162,7 +164,7 @@ void rwt::simulate_rwt_dataset(
 	{
 		// Simulate sensor readings at current location:
 		// -----------------------------------------------
-		mrpt::slam::CObservationPtr  new_obs_bin;
+		mrpt::obs::CObservationPtr  new_obs_bin;
 		std::string                  new_obs_txt;
 
 		bool valid_interp;

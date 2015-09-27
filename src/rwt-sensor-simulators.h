@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <mrpt/obs.h>
+#include <mrpt/obs/CObservation.h>
 #include <memory>  // for auto_ptr<>
 
 namespace rwt
@@ -62,7 +62,7 @@ namespace rwt
 		virtual void simulate(
 			SimulContext                 & sim,
 			const bool                    is_binary,
-			mrpt::slam::CObservationPtr  & out_observation_bin,
+			mrpt::obs::CObservationPtr  & out_observation_bin,
 			std::string                  & out_observation_text,
 			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
 			) = 0;

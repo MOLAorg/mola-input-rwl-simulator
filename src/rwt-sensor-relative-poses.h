@@ -23,7 +23,7 @@
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 namespace rwt
 {
@@ -36,7 +36,7 @@ namespace rwt
 	{
 		float m_minRange,m_maxRange;       //!< In meters
 
-		mrpt::slam::CSimplePointsMap  m_poses_points; //!< The XYZ components of all poses (for KD-tree search)
+		mrpt::maps::CSimplePointsMap  m_poses_points; //!< The XYZ components of all poses (for KD-tree search)
 		mrpt::aligned_containers<mrpt::poses::CPose3D>::deque_t  m_poses; //!< All poses
 
 		SensorSimul_RelativePoses(
@@ -53,7 +53,7 @@ namespace rwt
 		virtual void simulate(
 			SimulContext                 & sim,
 			const bool                    is_binary,
-			mrpt::slam::CObservationPtr  & out_observation_bin,
+			mrpt::obs::CObservationPtr  & out_observation_bin,
 			std::string                  & output_text_sensor,
 			mrpt::poses::CPose3DQuat     & out_GT_sensor_pose
 			)

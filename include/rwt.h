@@ -35,10 +35,11 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/graphs.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/utils/ci_less.h>
 
 #include "rwt-utils.h"  // Useful MACROS, etc.
 
@@ -102,8 +103,8 @@ namespace rwt
 			graph.edges.clear();
 		}
 
-		mrpt::slam::CSimplePointsMap  landmarks; //!< XYZ coordinates of all landmarks, accesible thru a KD-tree
-		mrpt::slam::CSimplePointsMap  nodes;     //!< XYZ coordinates of all nodes, accesible thru a KD-tree
+		mrpt::maps::CSimplePointsMap  landmarks; //!< XYZ coordinates of all landmarks, accesible thru a KD-tree
+		mrpt::maps::CSimplePointsMap  nodes;     //!< XYZ coordinates of all nodes, accesible thru a KD-tree
 		RWT_adjacency_graph           graph;     //!< graph.edges contain the existing paths between \a nodes above
 	};
 
