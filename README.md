@@ -4,8 +4,8 @@
 This software package introduces the Recursive World Language (RWL), an interpreted language for constructing large virtual scenarios aimed at simulating datasets for mobile robotics SLAM. 
 
 ## 2. Build Dependencies
-  * CMake
-  * MRPT
+  * CMake (>=2.4)
+  * MRPT (>=1.3.0)
 
 In Ubuntu: 
 `sudo apt-get install cmake libmrpt-dev`
