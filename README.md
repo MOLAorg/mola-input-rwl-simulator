@@ -1,5 +1,6 @@
-## 1. What is this?
+[![Build Status](https://travis-ci.org/jlblancoc/recursive-world-toolkit.png?branch=master)](https://travis-ci.org/jlblancoc/recursive-world-toolkit)
 
+## 1. What is this?
 
 This software package introduces the Recursive World Language (RWL), an interpreted language for constructing large virtual scenarios aimed at simulating datasets for mobile robotics SLAM. 
 
