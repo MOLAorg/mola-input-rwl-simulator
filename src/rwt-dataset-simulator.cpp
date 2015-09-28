@@ -304,5 +304,5 @@ void rwt::simulate_rwt_dataset(
 		cerr << "WARNING: Zero observations were detected by the sensor during " << sim.warning_no_observation_count << " frames.\n";
 
 	if (sim.warning_no_interpolation_count)
-		cerr << "WARNING: Couldn't interpolate path for " << sim.warning_no_interpolation_count << " time steps.\n";
+		cerr << "WARNING: Couldn't interpolate path for " << sim.warning_no_interpolation_count << " time steps. Some robot move steps may be longer than expected.\n";
 }
