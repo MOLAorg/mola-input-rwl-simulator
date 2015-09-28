@@ -33,6 +33,7 @@
 #include <stack>
 
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h> // To fix missing hdr in older mrpt network of poses 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/maps/CSimplePointsMap.h>
