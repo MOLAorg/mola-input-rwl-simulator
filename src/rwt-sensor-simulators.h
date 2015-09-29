@@ -33,7 +33,7 @@ namespace rwt
 			step_count    (0),
 			warning_no_observation_count   (0),
 			warning_no_interpolation_count (0),
-
+			accum_obs_count(0),
 			show_live_3D  (false),
 			win3D()
 		{ }
@@ -42,6 +42,7 @@ namespace rwt
 		size_t   step_count;
 		size_t   warning_no_observation_count;
 		size_t   warning_no_interpolation_count;
+		size_t   accum_obs_count; //!< Number of landmakrs observed so far. Can be reset at each iteration to find out how many LMs are seen each timestep
 
 		bool show_live_3D;
 		mrpt::gui::CDisplayWindow3DPtr win3D;

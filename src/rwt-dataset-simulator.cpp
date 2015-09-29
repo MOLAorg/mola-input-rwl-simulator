@@ -157,7 +157,19 @@ void rwt::simulate_rwt_dataset(
 
 	cout << endl; // start new line for simulation state
 
+	std::vector<size_t> num_obs_per_timestep;
 	unsigned int nStepForDecimateGUI = 0;
+
+	if (outputParams.show_live_3D)
+	{
+		cout << "\nLive window keyboard shortcuts:\n"
+			"----------------------------------------\n"
+			" q: Close window.\n"
+			" i: Show/hide node index numbers.\n"
+			" l: Show/hide landmarks.\n\n"  
+			;
+	}
+
 
 	// Simulation takes places in the domain of "time":
 	for (mrpt::system::TTimeStamp t = t0; t<(t_last+1e-4) ; t+=At_step)
@@ -175,7 +187,6 @@ void rwt::simulate_rwt_dataset(
 			sim.warning_no_interpolation_count++;
 			continue;
 		}
-
 
 		if (sensorParams.observations_as_c_structs)
 			outputParams.output_text_sensor << "my_observation_struct_t  observations_" << sim.step_count << "[] = {" << endl;
@@ -283,7 +294,12 @@ void rwt::simulate_rwt_dataset(
 			robot_GT_Pose.x(), robot_GT_Pose.y(), robot_GT_Pose.z(),
 			robot_GT_Pose.quat().r(), robot_GT_Pose.quat().x(), robot_GT_Pose.quat().y(), robot_GT_Pose.quat().z() );
 
-
+		// Store the number of obs per timestep:
+		if (sensorParams.observations_as_c_structs)
+		{
+			num_obs_per_timestep.push_back( sim.accum_obs_count );
+			sim.accum_obs_count = 0; // Reset for the next iter.
+		}
 		// Put here so the "continue" in case of not interpol. does not increment it:
 		sim.step_count++;
 
@@ -299,6 +315,23 @@ void rwt::simulate_rwt_dataset(
 
 	// Give an opportunity for delayed-output:
 	sensor->endSimul(outputParams);
+
+	// Final array of observations for C-style datasets:
+	if (sensorParams.observations_as_c_structs)
+	{
+		outputParams.output_text_sensor << 
+			"struct dataset_entry {  \n"
+			"  my_observation_struct_t  *observations;\n"
+			"  size_t num_obs;\n"
+			"};\n"
+			"dataset_entry  rwt_dataset[]= {\n";
+		
+		ASSERT_EQUAL_( num_obs_per_timestep.size(),sim.step_count);
+
+		for (size_t i=0;i<sim.step_count;i++)
+			outputParams.output_text_sensor << "{ observations_" << i << ", " << num_obs_per_timestep[i] << " },\n";
+		outputParams.output_text_sensor << "};\n";
+	}
 
 	if (sim.warning_no_observation_count)
 		cerr << "WARNING: Zero observations were detected by the sensor during " << sim.warning_no_observation_count << " frames.\n";

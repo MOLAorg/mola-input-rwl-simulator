@@ -135,6 +135,7 @@ namespace rwt
 			// Warning: No LM observed:
 			if (lst_observed_landmarks.size()==0)
 				sim.warning_no_observation_count++;
+			sim.accum_obs_count+=lst_observed_landmarks.size();
 
 			// Output:
 			if (is_binary)

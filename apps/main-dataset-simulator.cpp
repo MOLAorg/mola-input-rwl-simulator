@@ -249,6 +249,7 @@ int main(int argc, char**argv)
 		RWT_SensorOptions   sensorParams(cfg);
 		sensorParams.sOutFilesPrefix=sOutFilesPrefix;
 		sensorParams.observations_as_c_structs = sensorParams.cfg_file.read_bool("dataset-format","observations_as_c_structs", false);
+		const string comment_char = (sensorParams.observations_as_c_structs ? "//" : "%" );
 		
 
 		RWT_OutputOptions   outputParams;
@@ -266,12 +267,12 @@ int main(int argc, char**argv)
 		{
 			cout << "Saving map ground truth and preparing result files..."; cout.flush();
 
-			const string sOutSensor = sOutFilesPrefix + string("_SENSOR.txt");
+			const string sOutSensor = sOutFilesPrefix + (sensorParams.observations_as_c_structs ? string("_SENSOR.c") : string("_SENSOR.txt") );
 			outputParams.output_text_sensor.open(sOutSensor.c_str());
 			ASSERTMSG_(outputParams.output_text_sensor.is_open(), mrpt::format("Couldn't open output file: '%s'",sOutSensor.c_str() ) )
 			outputParams.output_text_sensor <<
-				"% STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n"
-				"% -------------------------------------------------------------------\n";
+				comment_char << " STEP     LANDMARK_ID      {...SENSOR SPECIFIC DATA...}  \n" <<
+				comment_char << " -------------------------------------------------------------------\n";
 
 			const string sOutGT = sOutFilesPrefix + string("_GT_PATH.txt");
 			outputParams.output_text_groundtruth.open(sOutGT.c_str());

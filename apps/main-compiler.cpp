@@ -84,6 +84,13 @@ int main(int argc, char**argv)
 
 		win3D.repaint();
 
+		cout << "\nLive window keyboard shortcuts:\n"
+			"----------------------------------------\n"
+			" q: Close window.\n"
+			" i: Show/hide node index numbers.\n"
+			" l: Show/hide landmarks.\n\n"  
+			;
+
 		bool end = false;
 		while (!end && win3D.isOpen())
 		{
