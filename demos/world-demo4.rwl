@@ -28,46 +28,48 @@ ENDLIST
 LIST room
 	CALL *150 random_LM_room
 	
-	YAW+= 10
-	PITCH+= -5
-	X+= 3
-	NODE
-	YAW+= -20
-	X+= 3
-	NODE
-
-	YAW+= 15
-	PITCH+= +3
-	X+= 2.5
+	X+= 9
+	PITCH+= 1
 	NODE
 ENDLIST
 
 LIST corridor
 	CALL *90 random_LM_corridor
 	
-	YAW+= 5
-	PITCH+= 2
-	X+= 10
+	PITCH+= -1
+	X+= 35
 	NODE
+ENDLIST
 
-	YAW+= -10
-	PITCH+= -4
-	X+= 10
-	NODE
-	YAW+= 6
-	X+= 10
-	NODE
+LIST long_corridor
+	CALL room
+	CALL corridor
+	CALL room
+	CALL corridor
 ENDLIST
 
 LIST main
 	// At the origin there is always a "node", there is no need to 
 	//  manually create it.
 	RANDOMIZE 123
-	CALL room
-	CALL corridor
-	CALL room
-	CALL corridor
-	CALL room
-	CALL corridor
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
+	CALL long_corridor
+	YAW+= 45
 ENDLIST
-

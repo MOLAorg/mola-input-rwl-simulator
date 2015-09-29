@@ -4,3 +4,4 @@ install*
 *.layout
 CMakeFiles/
 CMakeLists.txt.user
+*.gz
