@@ -40,6 +40,8 @@ namespace rwt
 	  */
 	struct SensorSimul_CameraCommon : public SensorSimulBase
 	{
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW // Required by eigen fixed vectors
+
 		float                 m_minRange,m_maxRange;       //!< In meters
 		mrpt::poses::CPose3D  m_camera_pose_on_robot;
 		mrpt::utils::TCamera  m_camera_params;  //!< Camera description (monocular)

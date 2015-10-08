@@ -150,7 +150,7 @@ int main(int argc, char**argv)
 			// Go thru the list of waypoints given by the user, then complement it
 			//  by finding the topological paths between them:
 			std::vector<size_t> lst_idxs;
-			size_t prev_idx = INVALID_NODEID;
+			uint64_t prev_idx = INVALID_NODEID;
 			for (size_t i=0;i<lst.size();i++)
 			{
 				// "lst[i]" can be:

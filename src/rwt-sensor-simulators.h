@@ -46,6 +46,8 @@ namespace rwt
 
 		bool show_live_3D;
 		mrpt::gui::CDisplayWindow3DPtr win3D;
+
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by Eigen 
 	};
 
 
@@ -75,6 +77,7 @@ namespace rwt
 			// Default: Nothing to do
 		}
 
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by Eigen 
 	}; // end of SensorSimulBase
 
 	typedef std::auto_ptr<SensorSimulBase>  SensorSimulBasePtr;
