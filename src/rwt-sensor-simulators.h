@@ -80,7 +80,7 @@ namespace rwt
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by Eigen 
 	}; // end of SensorSimulBase
 
-	typedef std::auto_ptr<SensorSimulBase>  SensorSimulBasePtr;
+	typedef std::unique_ptr<SensorSimulBase>  SensorSimulBasePtr;
 
 } // end namespace
 

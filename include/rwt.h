@@ -91,8 +91,12 @@ namespace rwt
 
 	struct RWT_graph_edge
 	{
+		// Dummy type, just needed by Dijkstra algorithm
+		// (should be fixed to avoid the need to define this one!)
+		typedef mrpt::math::TPoint2D type_value;
 	};
-	typedef mrpt::graphs::CDirectedGraph<RWT_graph_edge> RWT_adjacency_graph;
+	//typedef mrpt::graphs::CDirectedGraph<RWT_graph_edge> RWT_adjacency_graph;
+	typedef mrpt::graphs::CNetworkOfPoses<RWT_graph_edge> RWT_adjacency_graph;
 
 	/** The generated world, with landmarks and way-point nodes */
 	struct RWT_World
