@@ -44,7 +44,7 @@ namespace rwt
 		virtual void describeObservation(RWT_OutputOptions & outputParams)
 		{
 			outputParams.output_text_sensor <<
-				"%                           LEFT_PIXEL_X  LEFT_PIXEL_Y  RIGHT_PIXEL_X  RIGHT_PIXEL_Y   \n"
+				"%                           LEFT_PIXEL_X  RIGHT_PIXEL_X  PIXEL_Y   \n"
 				"% -------------------------------------------------------------------------------------\n";
 		}
 
