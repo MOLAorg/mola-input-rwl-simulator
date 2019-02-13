@@ -15,7 +15,8 @@ SET(EXECUTABLE_OUTPUT_PATH ${${PROJECT_NAME}_BINARY_DIR}/bin CACHE PATH "Output 
 #   The dependencies of a library are automatically added, so you only
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE( MRPT REQUIRED base maps obs gui graphs vision)
+find_package(MRPT REQUIRED  maps obs gui graphs vision)
+message(STATUS "MRPT_LIBRARIES: ${MRPT_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${${PROJECT_NAME}_SOURCE_DIR}/include)
 
@@ -37,6 +38,7 @@ FILE(GLOB LIBHDRS "src/*.h")
 FILE(GLOB LIBSRCS "src/*.cpp")
 FILE(GLOB LIBHDRSPUB "include/*.h")
 ADD_LIBRARY(rwt ${LIBHDRS} ${LIBSRCS} ${LIBHDRSPUB})
+TARGET_LINK_LIBRARIES(rwt ${MRPT_LIBRARIES})
 
 # --------------------------------
 # TARGET : rwt-compiler
@@ -44,7 +46,7 @@ ADD_LIBRARY(rwt ${LIBHDRS} ${LIBSRCS} ${LIBHDRSPUB})
 ADD_EXECUTABLE(rwt-compiler
 	apps/main-compiler.cpp
 	)
-TARGET_LINK_LIBRARIES(rwt-compiler rwt ${MRPT_LIBS})
+TARGET_LINK_LIBRARIES(rwt-compiler rwt ${MRPT_LIBRARIES})
 ADD_DEPENDENCIES(rwt-compiler rwt)
 
 # --------------------------------
@@ -53,7 +55,5 @@ ADD_DEPENDENCIES(rwt-compiler rwt)
 ADD_EXECUTABLE(rwt-dataset-simulator
 	apps/main-dataset-simulator.cpp
 	)
-TARGET_LINK_LIBRARIES(rwt-dataset-simulator rwt ${MRPT_LIBS})
+TARGET_LINK_LIBRARIES(rwt-dataset-simulator rwt ${MRPT_LIBRARIES})
 ADD_DEPENDENCIES(rwt-dataset-simulator rwt)
-
-

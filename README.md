@@ -6,7 +6,7 @@ This software package introduces the Recursive World Language (RWL), an interpre
 
 ## 2. Build Dependencies
   * CMake (>=2.4)
-  * MRPT (>=1.3.0)
+  * MRPT (1.5.x or >=1.9.9)
 
 In Ubuntu: 
 `sudo apt-get install cmake libmrpt-dev`
